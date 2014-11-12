@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- TabHost标签按钮样式 -->
+    <style name="tab_button_bottom">
+        <item name="android:textSize">12px</item>
+        <item name="android:textColor">#ffffffff</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:background">@drawable/tab_btn_bg</item>
+        <item name="android:layout_marginTop">2.0dip</item>
+        <item name="android:button">@null</item>
+        <item name="android:paddingTop">6dip</item>
+        <item name="android:drawablePadding">4dip</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1.0</item>
+        <item name="android:singleLine">true</item>
+    </style>
+    <!-- 页面标题LinearLayout样式 -->
+    <style name="activity_title_background">
+        <item name="android:background">@drawable/title_background</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <!-- 界面标题TextView样式 -->
+    <style name="activity_title_text">
+        <item name="android:textSize">14dip</item>
+        <item name="android:textColor">@drawable/white</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+</resources>

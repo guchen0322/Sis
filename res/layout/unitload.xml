@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res/com.sis.core"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EFEFEFEF"
+    android:orientation="vertical" >
+    
+    <com.sis.core.ui.MultipleTopBar
+            android:id="@+id/topBar"  
+            android:layout_width="wrap_content"  
+            android:layout_height="wrap_content"  
+            custom:leftBackground="@drawable/ic_launcher"  
+            custom:leftText="左侧"  
+            custom:leftTextColor="#ff0000"  
+            custom:rightBackground="@drawable/ic_launcher"  
+            custom:rightText="右侧"  
+            custom:rightTextColor="#ff0000"  
+            custom:title="自定义标题"  
+            custom:titleTextColor="#123412"  
+            custom:titleTextSize="14.0sp" />  
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+	    <TextView
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="实时数据   6:30"
+	        android:textSize="24sp"/> 
+	    <TextView
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="641.29 W/KWH"
+	        android:textSize="24sp"
+	        android:textColor="#FF0000"/> 
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dip"
+            android:paddingTop="10dip">
+
+            <TextView
+                android:id="@+id/titleTimeStatistics"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/timeStatistics"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:id="@+id/titleDateStatistics"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/dateStatistics"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:id="@+id/titleWeekStatistics"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/weekStatistics"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/titleMonthStatistics"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/monthStatistics"
+                android:textSize="18sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="vertical"
+            android:paddingBottom="3dip" >
+
+            <ImageView
+                android:id="@+id/titleBottomLine"
+                android:layout_width="80dip"
+                android:layout_height="2dip"
+                android:scaleType="matrix"
+                android:background="#0000FF"/>
+        </LinearLayout>
+        
+    </LinearLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:background="#000000"
+        android:flipInterval="30"
+        android:persistentDrawingCache="animation"/>
+
+</LinearLayout>
