@@ -19,6 +19,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.sis.core.ui.LoginActivity"/>
+        <activity android:name="com.sis.core.ui.MainActivity"/>
         <activity android:name="com.sis.core.ui.BaseActivity"/>
         <activity android:name="com.sis.core.ui.FeeActivity"/>
         <activity android:name="com.sis.core.ui.MoreActivity"/>

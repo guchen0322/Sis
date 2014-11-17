@@ -119,13 +119,6 @@ public class TimeStatisticsFragment extends Fragment {
 	}
 
 	@Override
-	public void onResume() {
-		super.onResume();
-		Log.d("mytest", "=========onResume========");
-		
-	}
-
-	@Override
 	public void onDestroy() {
 		super.onDestroy();
 	}

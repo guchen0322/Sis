@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background="@drawable/login_bg">
+    
+	<RelativeLayout 
+	    android:id="@+id/input_layout"
+	    android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_marginTop="100dp"
+    	android:background="@drawable/login_input_bg">
+	    <ImageView 
+	        android:id="@+id/login_img_user"
+	        android:src="@drawable/login_img_user"
+	        android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:layout_marginLeft="10dp"
+    		android:layout_marginTop="20dp"/>
+	    <EditText 
+	        android:id="@+id/login_user"
+	        android:layout_width="match_parent"
+    		android:layout_height="wrap_content"
+    		android:layout_toRightOf="@+id/login_img_user"
+    		android:layout_alignBottom="@+id/login_img_user"
+    		android:background="@android:color/white"/>
+	    
+	    <ImageView 
+	        android:id="@+id/login_img_pswd"
+	        android:src="@drawable/login_img_pswd"
+	        android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:layout_marginTop="40dp"
+    		android:layout_alignLeft="@+id/login_img_user"
+    		android:layout_below="@+id/login_img_user"/>
+	    <EditText 
+	        android:id="@+id/login_pswd"
+	        android:layout_width="match_parent"
+    		android:layout_height="wrap_content"
+    		android:layout_toRightOf="@+id/login_img_pswd"
+    		android:layout_alignBottom="@+id/login_img_pswd"
+    		android:background="@android:color/white"/>
+	</RelativeLayout>
+	
+	<Button
+	    android:id="@+id/login" 
+	    android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_below="@+id/input_layout"
+		android:layout_marginTop="20dp"
+    	android:background="@drawable/login_btn"/>
+</RelativeLayout>
