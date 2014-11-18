@@ -3,30 +3,39 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:resizeable="true"
+        android:smallScreens="true" />
+
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="14" />
+        android:targetSdkVersion="17" />
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@android:style/Theme.NoTitleBar">
-        
-        <activity android:name="com.sis.core.ui.TabHostActivity">
+        android:theme="@android:style/Theme.NoTitleBar" >
+        <activity android:name=".ui.StartActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.sis.core.ui.LoginActivity"/>
-        <activity android:name="com.sis.core.ui.MainActivity"/>
-        <activity android:name="com.sis.core.ui.BaseActivity"/>
-        <activity android:name="com.sis.core.ui.FeeActivity"/>
-        <activity android:name="com.sis.core.ui.MoreActivity"/>
-        <activity android:name="com.sis.core.ui.ScoreActivity"/>
-        <activity android:name="com.sis.core.ui.StudyActivity"/>
-        <activity android:name="com.sis.core.ui.CertificateActivity"/>
+        <activity
+            android:name=".ui.LoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.DataStatisticsActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
