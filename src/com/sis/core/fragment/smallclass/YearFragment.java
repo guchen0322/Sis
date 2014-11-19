@@ -1,4 +1,4 @@
-package com.sis.core.fragment;
+package com.sis.core.fragment.smallclass;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,12 +8,17 @@ import android.view.ViewGroup;
 import com.sis.core.R;
 import com.sis.core.fragment.base.BaseFragment;
 
-public class FDMHFragment extends BaseFragment {
+public class YearFragment extends BaseFragment {
+
+	public static YearFragment newInstance() {
+		YearFragment fragment = new YearFragment();
+		return fragment;
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View fdmhLayout = inflater.inflate(R.layout.fragment_fdmh, container, false);
-		return fdmhLayout;
+		View fdlLayout = inflater.inflate(R.layout.fragment_year, container, false);
+		return fdlLayout;
 	}
 
 }

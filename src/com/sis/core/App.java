@@ -2,6 +2,7 @@ package com.sis.core;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.DisplayMetrics;
 
 import com.sis.core.utils.ActivityMgrUtils;
 import com.sis.core.utils.PreferenceUtils;
@@ -17,6 +18,7 @@ public class App extends Application {
 	private static Context mContext;
 	private static ActivityMgrUtils activityManager;
 	private static PreferenceUtils preferenceUtils;
+	private static DisplayMetrics DM;
 
 	@Override
 	public void onCreate() {
@@ -41,6 +43,10 @@ public class App extends Application {
 		return preferenceUtils;
 	}
 
+	public static DisplayMetrics getDM() {
+		return DM;
+	}
+
 	/**
 	 * Intialize
 	 */
@@ -50,6 +56,7 @@ public class App extends Application {
 
 		activityManager = new ActivityMgrUtils();
 		preferenceUtils = new PreferenceUtils(mContext);
+		DM = getResources().getDisplayMetrics();
 	}
 
 }

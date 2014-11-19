@@ -1,20 +1,37 @@
 package com.sis.core.ui;
 
+import java.net.URLEncoder;
+
+import org.apache.http.Header;
+
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.sis.core.R;
-import com.sis.core.fragment.FDLFragment;
-import com.sis.core.fragment.FDMHFragment;
-import com.sis.core.fragment.GDMHFragment;
-import com.sis.core.fragment.JZFHFragment;
+import com.sis.core.entity.ResInfo;
+import com.sis.core.enums.FragmentType;
+import com.sis.core.fragment.bigclass.FDLFragment;
+import com.sis.core.fragment.bigclass.FDMHFragment;
+import com.sis.core.fragment.bigclass.GDMHFragment;
+import com.sis.core.fragment.bigclass.JZFHFragment;
+import com.sis.core.listener.CyclePageChangeListener;
+import com.sis.core.net.SISHttpClient;
 import com.sis.core.ui.base.BaseFragmentActivity;
+import com.sis.core.utils.JsonUtil;
+import com.sis.core.widget.switchView.SwitchButton;
 
-public class DataStatisticsActivity extends BaseFragmentActivity implements OnClickListener {
+public class DataStatisticsActivity extends BaseFragmentActivity implements OnClickListener, CyclePageChangeListener {
 
 	private FragmentManager fragmentManager;
 	private JZFHFragment jzfhFragment;
@@ -23,6 +40,10 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 	private FDLFragment fdlFragment;
 
 	private ImageView backIV;
+	private SwitchButton dataCompareSB;
+	private TextView descTV, oneTV, unitTV, twoTV, thirdTV;
+	private RelativeLayout thirdDataRL;
+
 	private View jzfhLayout;
 	private View fdmhLayout;
 	private View gdmhLayout;
@@ -40,11 +61,30 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 
 		// 第一次启动时选中第0个tab
 		setTabSelection(0);
+
+		// 请求数据
+		getServerData();
 	}
 
 	private void initViews() {
 		backIV = (ImageView) findViewById(R.id.backIV);
 		backIV.setOnClickListener(this);
+
+		descTV = (TextView) findViewById(R.id.descTV);
+		oneTV = (TextView) findViewById(R.id.oneTV);
+		unitTV = (TextView) findViewById(R.id.unitTV);
+		twoTV = (TextView) findViewById(R.id.twoTV);
+		thirdTV = (TextView) findViewById(R.id.thirdTV);
+
+		thirdDataRL = (RelativeLayout) findViewById(R.id.thirdDataRL);
+		dataCompareSB = (SwitchButton) findViewById(R.id.dataCompareSB);
+		dataCompareSB.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				Toast.makeText(DataStatisticsActivity.this, String.valueOf(isChecked), Toast.LENGTH_SHORT).show();
+			}
+		});
 
 		jzfhLayout = findViewById(R.id.jzfh_layout);
 		fdmhLayout = findViewById(R.id.fdmh_layout);
@@ -70,6 +110,7 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 		case 0:
 			if (jzfhFragment == null) {
 				jzfhFragment = new JZFHFragment();
+				jzfhFragment.setCyclePageChangeListener(this);
 				transaction.add(R.id.content, jzfhFragment);
 			} else {
 				transaction.show(jzfhFragment);
@@ -122,6 +163,32 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 		}
 	}
 
+	private void getServerData() {
+		RequestParams params = new RequestParams();
+		params.put("type", "1");
+		params.put("startTime", URLEncoder.encode("2014-09-26 09:00:00"));
+		params.put("endTime", URLEncoder.encode("2014-09-26 10:00:01"));
+		SISHttpClient.post("http://oa.sygpp.com/SACSIS/HOUR/SACSIS/getallsacsis", params, new BaseJsonHttpResponseHandler<ResInfo>() {
+
+			@Override
+			public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, ResInfo errorResponse) {
+
+			}
+
+			@Override
+			public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, ResInfo resInfo) {
+				if (resInfo != null) {
+
+				}
+			}
+
+			@Override
+			protected ResInfo parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+				return JsonUtil.getResInfo(rawJsonData);
+			}
+		});
+	}
+
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -129,16 +196,74 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 			back();
 			break;
 		case R.id.jzfh_layout:
+			unitTV.setText("MW");
 			setTabSelection(0);
 			break;
-		case R.id.fdmh_layout:
+		case R.id.fdl_layout:
+			unitTV.setText("万KWH");
 			setTabSelection(1);
 			break;
-		case R.id.gdmh_layout:
+		case R.id.fdmh_layout:
+			unitTV.setText("g/(kw.h)");
 			setTabSelection(2);
 			break;
-		case R.id.fdl_layout:
+		case R.id.gdmh_layout:
+			unitTV.setText("g/(kw.h)");
 			setTabSelection(3);
+			break;
+		}
+	}
+
+	@Override
+	public void cycleChange(FragmentType fragmentType, int position) {
+		switch (position) {
+		// 分时
+		case 0:
+			descTV.setText("分时数据");
+			oneTV.setTextColor(getResources().getColor(R.color.fen_data_color));
+			twoTV.setTextColor(getResources().getColor(R.color.fen_data_color));
+			thirdTV.setTextColor(getResources().getColor(R.color.fen_data_color));
+			thirdDataRL.setVisibility(View.GONE);
+			break;
+		// 日
+		case 1:
+			descTV.setText("日统计数据");
+			oneTV.setTextColor(getResources().getColor(R.color.other_data_color));
+			twoTV.setTextColor(getResources().getColor(R.color.other_data_color));
+			thirdTV.setTextColor(getResources().getColor(R.color.other_data_color));
+			thirdDataRL.setVisibility(View.GONE);
+			break;
+		// 周
+		case 2:
+			descTV.setText("周统计数据");
+			oneTV.setTextColor(getResources().getColor(R.color.other_data_color));
+			twoTV.setTextColor(getResources().getColor(R.color.other_data_color));
+			thirdTV.setTextColor(getResources().getColor(R.color.other_data_color));
+			thirdDataRL.setVisibility(View.VISIBLE);
+			break;
+		// 月
+		case 3:
+			descTV.setText("月统计数据");
+			oneTV.setTextColor(getResources().getColor(R.color.other_data_color));
+			twoTV.setTextColor(getResources().getColor(R.color.other_data_color));
+			thirdTV.setTextColor(getResources().getColor(R.color.other_data_color));
+			thirdDataRL.setVisibility(View.VISIBLE);
+			break;
+		// 季
+		case 4:
+			descTV.setText("季统计数据   2014年 3季度");
+			oneTV.setTextColor(getResources().getColor(R.color.other_data_color));
+			twoTV.setTextColor(getResources().getColor(R.color.other_data_color));
+			thirdTV.setTextColor(getResources().getColor(R.color.other_data_color));
+			thirdDataRL.setVisibility(View.GONE);
+			break;
+		// 年
+		case 5:
+			descTV.setText("年统计数据   2014年");
+			oneTV.setTextColor(getResources().getColor(R.color.other_data_color));
+			twoTV.setTextColor(getResources().getColor(R.color.other_data_color));
+			thirdTV.setTextColor(getResources().getColor(R.color.other_data_color));
+			thirdDataRL.setVisibility(View.GONE);
 			break;
 		}
 	}

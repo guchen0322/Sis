@@ -13,5 +13,7 @@
     <color name="user_center_line">#6c6c6c</color>
 
     <color name="fen_data_color">#ff0000</color>
+    <color name="other_data_color">#00bc0d</color>
+    <color name="index_line_color">#27bdff</color>
     
 </resources>

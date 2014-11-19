@@ -35,13 +35,13 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingLeft="20dp"
-        android:paddingTop="20dp" >
+        android:paddingTop="5dp" >
 
         <TextView
             android:id="@+id/descTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="月统计数据"
+            android:text="分时数据"
             android:textColor="@color/black"
             android:textSize="17sp" />
 
@@ -54,6 +54,7 @@
             android:paddingTop="10dp" >
 
             <TextView
+                android:id="@+id/oneTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -62,6 +63,7 @@
                 android:textSize="30sp" />
 
             <TextView
+                android:id="@+id/unitTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="20dp"
@@ -79,6 +81,7 @@
             android:paddingTop="10dp" >
 
             <TextView
+                android:id="@+id/twoTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -86,6 +89,7 @@
                 android:textColor="@color/fen_data_color" />
 
             <TextView
+                android:id="@+id/thirdTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -94,33 +98,41 @@
                 android:textColor="@color/fen_data_color" />
         </LinearLayout>
 
-        <LinearLayout
+        <RelativeLayout
+            android:id="@+id/thirdDataRL"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/twoDataLL"
-            android:layout_alignParentRight="true"
             android:orientation="vertical"
-            android:paddingRight="20dp" >
+            android:paddingRight="20dp"
+            android:paddingTop="40dp"
+            android:visibility="gone" >
 
             <TextView
+                android:id="@+id/tempTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:paddingRight="5dp"
                 android:text="数据对比"
                 android:textColor="@color/black" />
 
-            <TextView
+            <com.sis.core.widget.switchView.SwitchButton
+                android:id="@+id/dataCompareSB"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:text="开" />
-        </LinearLayout>
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/tempTV"
+                android:layout_centerVertical="true" />
+        </RelativeLayout>
     </RelativeLayout>
 
     <FrameLayout
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" >
+        android:layout_weight="1"
+        android:paddingTop="10dp" >
     </FrameLayout>
 
     <LinearLayout

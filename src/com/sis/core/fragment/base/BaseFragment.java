@@ -1,5 +1,7 @@
 package com.sis.core.fragment.base;
 
+import com.sis.core.utils.ScreenUtils;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,13 +11,17 @@ import android.view.LayoutInflater;
 
 public class BaseFragment extends Fragment {
 
-	public FragmentActivity mActivity;
-	public LayoutInflater mInflater;
+	protected static final int SHOW_TITLE_COUNT = 5;
+
+	protected FragmentActivity mActivity;
+	protected LayoutInflater mInflater;
+	protected int screenW;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mInflater = LayoutInflater.from(getActivity() == null ? mActivity : getActivity());
+		screenW = (int) ScreenUtils.screenWidth();
 	}
 
 	@Override
