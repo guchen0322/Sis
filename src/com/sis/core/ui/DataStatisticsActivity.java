@@ -1,9 +1,5 @@
 package com.sis.core.ui;
 
-import java.net.URLEncoder;
-
-import org.apache.http.Header;
-
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -16,19 +12,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.loopj.android.http.BaseJsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 import com.sis.core.R;
-import com.sis.core.entity.ResInfo;
 import com.sis.core.enums.FragmentType;
 import com.sis.core.fragment.bigclass.FDLFragment;
 import com.sis.core.fragment.bigclass.FDMHFragment;
 import com.sis.core.fragment.bigclass.GDMHFragment;
 import com.sis.core.fragment.bigclass.JZFHFragment;
 import com.sis.core.listener.CyclePageChangeListener;
-import com.sis.core.net.SISHttpClient;
 import com.sis.core.ui.base.BaseFragmentActivity;
-import com.sis.core.utils.JsonUtil;
 import com.sis.core.widget.switchView.SwitchButton;
 
 public class DataStatisticsActivity extends BaseFragmentActivity implements OnClickListener, CyclePageChangeListener {
@@ -164,11 +155,12 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 	}
 
 	private void getServerData() {
+		/*
 		RequestParams params = new RequestParams();
-		params.put("type", "1");
-		params.put("startTime", URLEncoder.encode("2014-09-26 09:00:00"));
-		params.put("endTime", URLEncoder.encode("2014-09-26 10:00:01"));
-		SISHttpClient.post("http://oa.sygpp.com/SACSIS/HOUR/SACSIS/getallsacsis", params, new BaseJsonHttpResponseHandler<ResInfo>() {
+		params.put("quid", "1");
+		// params.put("startTime", "2014-09-26 09:00:00");
+		// params.put("endTime", "2014-09-26 10:00:01");
+		SISHttpClient.post("http://121.42.12.128/REST/question/getansersbyqid", params, new BaseJsonHttpResponseHandler<ResInfo>() {
 
 			@Override
 			public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, ResInfo errorResponse) {
@@ -184,9 +176,30 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 
 			@Override
 			protected ResInfo parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+				Log.i("zhang.h", rawJsonData);
 				return JsonUtil.getResInfo(rawJsonData);
 			}
 		});
+		
+		SISHttpClient.get("http://121.42.12.128/REST/communication/getAllCommuncaion", new BaseJsonHttpResponseHandler<ResInfo>() {
+
+			@Override
+			public void onFailure(int arg0, Header[] arg1, Throwable arg2, String arg3, ResInfo arg4) {
+				
+			}
+
+			@Override
+			public void onSuccess(int arg0, Header[] arg1, String arg2, ResInfo arg3) {
+				
+			}
+
+			@Override
+			protected ResInfo parseResponse(String arg0, boolean arg1) throws Throwable {
+				Log.i("zhang.h", arg0);
+				return null;
+			}
+		});
+		*/
 	}
 
 	@Override
