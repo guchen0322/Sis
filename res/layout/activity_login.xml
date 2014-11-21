@@ -35,7 +35,8 @@
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/login_img_user"
             android:layout_toRightOf="@id/login_img_user"
-            android:background="@android:color/white" />
+            android:background="@android:color/white" 
+            android:text="Admin"/>
 
         <ImageView
             android:id="@+id/login_img_pswd"
@@ -52,7 +53,8 @@
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/login_img_pswd"
             android:layout_toRightOf="@id/login_img_pswd"
-            android:background="@android:color/white" />
+            android:background="@android:color/white" 
+            android:text="sygpassword" />
     </RelativeLayout>
 
 </RelativeLayout>

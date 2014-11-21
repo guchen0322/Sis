@@ -31,7 +31,7 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.activity_main); 
 
 		// 初始化布局元素
 		initViews();
