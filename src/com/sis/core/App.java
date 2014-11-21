@@ -22,7 +22,7 @@ public class App extends Application {
 	private static ActivityMgrUtils activityManager;
 	private static PreferenceUtils preferenceUtils;
 	private static DisplayMetrics DM;
-	private static Map<String,String> accounts;
+	private static Map<String, String> accounts;
 
 	@Override
 	public void onCreate() {
@@ -69,7 +69,7 @@ public class App extends Application {
 		activityManager = new ActivityMgrUtils();
 		preferenceUtils = new PreferenceUtils(mContext);
 		DM = getResources().getDisplayMetrics();
-		
+
 		accounts = new HashMap<String, String>();
 		accounts.put("Admin", "sygpassword");
 		accounts.put("Sunl", "sygpassword");

@@ -32,10 +32,10 @@ public class StartActivity extends BaseActivity {
 	private void startMainActivity() {
 		Intent intent = null;
 		Log.d("StartActivity", "loginstatus:" + App.getPreferenceUtils().getPreferenceInt(PreferenceUtils.KEY_LOGIN_STATUS));
-		//未登录
-		if(0 == App.getPreferenceUtils().getPreferenceInt(PreferenceUtils.KEY_LOGIN_STATUS))
+		// 未登录
+		if (0 == App.getPreferenceUtils().getPreferenceInt(PreferenceUtils.KEY_LOGIN_STATUS))
 			intent = new Intent(this, LoginActivity.class);
-		if(1 == App.getPreferenceUtils().getPreferenceInt(PreferenceUtils.KEY_LOGIN_STATUS))
+		if (1 == App.getPreferenceUtils().getPreferenceInt(PreferenceUtils.KEY_LOGIN_STATUS))
 			intent = new Intent(this, MainActivity.class);
 		startActivity(intent);
 

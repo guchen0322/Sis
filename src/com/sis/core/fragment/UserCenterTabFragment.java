@@ -14,21 +14,21 @@ import com.sis.core.ui.LoginActivity;
 import com.sis.core.utils.PreferenceUtils;
 
 public class UserCenterTabFragment extends BaseFragment {
-	
+
 	ImageView mExitIV;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View ucLayout = inflater.inflate(R.layout.fragment_user_center, container, false);
-		
+
 		mExitIV = (ImageView) ucLayout.findViewById(R.id.exit);
 		mExitIV.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View arg0) {
-				 App.getPreferenceUtils().savePreferenceInt(PreferenceUtils.KEY_LOGIN_STATUS, 0);
-				 Intent intent = new Intent(getActivity(), LoginActivity.class);
-				 startActivity(intent);
+				App.getPreferenceUtils().savePreferenceInt(PreferenceUtils.KEY_LOGIN_STATUS, 0);
+				Intent intent = new Intent(getActivity(), LoginActivity.class);
+				startActivity(intent);
 			}
 		});
 		return ucLayout;
