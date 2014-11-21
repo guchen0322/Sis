@@ -19,17 +19,46 @@ import com.github.mikephil.charting.utils.XLabels;
 import com.github.mikephil.charting.utils.XLabels.XLabelPosition;
 import com.github.mikephil.charting.utils.YLabels;
 import com.sis.core.R;
+import com.sis.core.enums.FragmentType;
 import com.sis.core.fragment.base.BaseFragment;
 
 public class MonthFragment extends BaseFragment {
 
+	protected FragmentType fragmentType;
+	protected int currColor;
+	
 	private BarChart monthChart;
 
-	public static MonthFragment newInstance() {
+	public static MonthFragment newInstance(FragmentType fragmentType) {
 		MonthFragment fragment = new MonthFragment();
+		Bundle args = new Bundle();
+		args.putSerializable(KEY_FRAGMENT_TYPE, fragmentType);
+		fragment.setArguments(args);
 		return fragment;
 	}
 
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		fragmentType = (FragmentType) getArguments().getSerializable(KEY_FRAGMENT_TYPE);
+		switch (fragmentType) {
+		case JZFH:
+			currColor = JZFH_COLOR;
+			break;
+		case FDL:
+			currColor = FDL_COLOR;
+			break;
+		case FDMH:
+			currColor = FDMH_COLOR;
+			break;
+		case GDMH:
+			currColor = GDMH_COLOR;
+			break;
+		default:
+			break;
+		}
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View monthLayout = inflater.inflate(R.layout.fragment_month, container, false);
@@ -57,14 +86,14 @@ public class MonthFragment extends BaseFragment {
 
 		XLabels xl = monthChart.getXLabels();
 		xl.setCenterXLabelText(true);
-		xl.setTextColor(Color.rgb(0, 188, 13));
+		xl.setTextColor(currColor);
 		xl.setTypeface(Typeface.DEFAULT_BOLD);
 		xl.setAdjustXLabels(false);
 		xl.setPosition(XLabelPosition.BOTTOM);
 
 		YLabels yl = monthChart.getYLabels();
 		yl.setFormatter(new LargeValueFormatter());
-		yl.setTextColor(Color.rgb(0, 188, 13));
+		yl.setTextColor(currColor);
 		yl.setTypeface(Typeface.DEFAULT_BOLD);
 
 		// add data
@@ -99,7 +128,7 @@ public class MonthFragment extends BaseFragment {
 		}
 
 		BarDataSet set1 = new BarDataSet(yVals1, "");
-		set1.setColor(Color.rgb(0, 188, 13));
+		set1.setColor(currColor);
 		BarDataSet set2 = new BarDataSet(yVals2, "");
 		set2.setColor(Color.rgb(255, 0, 0));
 

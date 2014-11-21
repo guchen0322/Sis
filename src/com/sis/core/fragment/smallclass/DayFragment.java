@@ -2,7 +2,6 @@ package com.sis.core.fragment.smallclass;
 
 import java.util.ArrayList;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,15 +17,44 @@ import com.github.mikephil.charting.utils.XLabels;
 import com.github.mikephil.charting.utils.XLabels.XLabelPosition;
 import com.github.mikephil.charting.utils.YLabels;
 import com.sis.core.R;
+import com.sis.core.enums.FragmentType;
 import com.sis.core.fragment.base.BaseFragment;
 
 public class DayFragment extends BaseFragment {
 
+	protected FragmentType fragmentType;
+	protected int currColor;
+	
 	private LineChart dayChart;
 
-	public static DayFragment newInstance() {
+	public static DayFragment newInstance(FragmentType fragmentType) {
 		DayFragment fragment = new DayFragment();
+		Bundle args = new Bundle();
+		args.putSerializable(KEY_FRAGMENT_TYPE, fragmentType);
+		fragment.setArguments(args);
 		return fragment;
+	}
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		fragmentType = (FragmentType) getArguments().getSerializable(KEY_FRAGMENT_TYPE);
+		switch (fragmentType) {
+		case JZFH:
+			currColor = JZFH_COLOR;
+			break;
+		case FDL:
+			currColor = FDL_COLOR;
+			break;
+		case FDMH:
+			currColor = FDMH_COLOR;
+			break;
+		case GDMH:
+			currColor = GDMH_COLOR;
+			break;
+		default:
+			break;
+		}
 	}
 
 	@Override
@@ -69,14 +97,14 @@ public class DayFragment extends BaseFragment {
 		dayChart.setDrawHorizontalGrid(false);
 
 		XLabels xl = dayChart.getXLabels();
-		xl.setTextColor(Color.rgb(0, 188, 13));
+		xl.setTextColor(currColor);
 		xl.setTypeface(Typeface.DEFAULT_BOLD);
 		xl.setAdjustXLabels(false);
 		xl.setPosition(XLabelPosition.BOTTOM);
 
 		YLabels yl = dayChart.getYLabels();
 		yl.setLabelCount(7);
-		yl.setTextColor(Color.rgb(0, 188, 13));
+		yl.setTextColor(currColor);
 		yl.setTypeface(Typeface.DEFAULT_BOLD);
 
 		// add data
@@ -103,11 +131,11 @@ public class DayFragment extends BaseFragment {
 
 		// create a dataset and give it a type
 		LineDataSet set1 = new LineDataSet(yVals, "");
-		set1.setColor(Color.rgb(0, 188, 13));
-		set1.setCircleColor(Color.rgb(0, 188, 13));
+		set1.setColor(currColor);
+		set1.setCircleColor(currColor);
 		set1.setLineWidth(1.5f);
 		set1.setFillAlpha(65);
-		set1.setFillColor(Color.rgb(0, 188, 13));
+		set1.setFillColor(currColor);
 
 		ArrayList<LineDataSet> dataSets = new ArrayList<LineDataSet>();
 		dataSets.add(set1); // add the datasets

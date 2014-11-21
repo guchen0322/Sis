@@ -2,7 +2,6 @@ package com.sis.core.fragment.smallclass;
 
 import java.util.ArrayList;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,18 +13,47 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.utils.XLabels;
-import com.github.mikephil.charting.utils.YLabels;
 import com.github.mikephil.charting.utils.XLabels.XLabelPosition;
+import com.github.mikephil.charting.utils.YLabels;
 import com.sis.core.R;
+import com.sis.core.enums.FragmentType;
 import com.sis.core.fragment.base.BaseFragment;
 
 public class MinuteFragment extends BaseFragment {
 
+	protected FragmentType fragmentType;
+	protected int currColor;
+
 	private LineChart minuteChart;
 
-	public static MinuteFragment newInstance() {
+	public static MinuteFragment newInstance(FragmentType fragmentType) {
 		MinuteFragment fragment = new MinuteFragment();
+		Bundle args = new Bundle();
+		args.putSerializable(KEY_FRAGMENT_TYPE, fragmentType);
+		fragment.setArguments(args);
 		return fragment;
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		fragmentType = (FragmentType) getArguments().getSerializable(KEY_FRAGMENT_TYPE);
+		switch (fragmentType) {
+		case JZFH:
+			currColor = JZFH_COLOR;
+			break;
+		case FDL:
+			currColor = FDL_COLOR;
+			break;
+		case FDMH:
+			currColor = FDMH_COLOR;
+			break;
+		case GDMH:
+			currColor = GDMH_COLOR;
+			break;
+		default:
+			break;
+		}
 	}
 
 	@Override
@@ -63,14 +91,14 @@ public class MinuteFragment extends BaseFragment {
 		minuteChart.setDrawVerticalGrid(false);
 
 		XLabels x = minuteChart.getXLabels();
-		x.setTextColor(Color.rgb(0, 188, 13));
+		x.setTextColor(currColor);
 		x.setTypeface(Typeface.DEFAULT_BOLD);
 		x.setAdjustXLabels(false);
 		x.setPosition(XLabelPosition.BOTTOM);
 
 		YLabels y = minuteChart.getYLabels();
 		y.setLabelCount(7);
-		y.setTextColor(Color.rgb(0, 188, 13));
+		y.setTextColor(currColor);
 		y.setTypeface(Typeface.DEFAULT_BOLD);
 
 		// add data
@@ -102,8 +130,8 @@ public class MinuteFragment extends BaseFragment {
 		set1.setDrawFilled(true);
 		set1.setDrawCircles(false);
 		set1.setFillAlpha(255);
-		set1.setFillColor(Color.rgb(0, 188, 13));
-		set1.setColor(Color.rgb(0, 188, 13));
+		set1.setFillColor(currColor);
+		set1.setColor(currColor);
 
 		ArrayList<LineDataSet> dataSets = new ArrayList<LineDataSet>();
 		dataSets.add(set1);

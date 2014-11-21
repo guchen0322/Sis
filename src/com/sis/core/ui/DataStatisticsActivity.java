@@ -19,10 +19,7 @@ import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.sis.core.R;
 import com.sis.core.entity.ResInfo;
 import com.sis.core.enums.FragmentType;
-import com.sis.core.fragment.bigclass.FDLFragment;
-import com.sis.core.fragment.bigclass.FDMHFragment;
-import com.sis.core.fragment.bigclass.GDMHFragment;
-import com.sis.core.fragment.bigclass.JZFHFragment;
+import com.sis.core.fragment.BigClassFragment;
 import com.sis.core.listener.CyclePageChangeListener;
 import com.sis.core.net.SISHttpClient;
 import com.sis.core.ui.base.BaseFragmentActivity;
@@ -32,14 +29,10 @@ import com.sis.core.widget.switchView.SwitchButton;
 public class DataStatisticsActivity extends BaseFragmentActivity implements OnClickListener, CyclePageChangeListener {
 
 	private FragmentManager fragmentManager;
-	private JZFHFragment jzfhFragment;
-	private FDMHFragment fdmhFragment;
-	private GDMHFragment gdmhFragment;
-	private FDLFragment fdlFragment;
 
 	private ImageView backIV;
 	private SwitchButton dataCompareSB;
-	private TextView descTV, oneTV, unitTV, twoTV, thirdTV;
+	private TextView titleTV, descTV, oneTV, unitTV, twoTV, thirdTV;
 	private RelativeLayout thirdDataRL;
 
 	private View jzfhLayout, fdmhLayout, gdmhLayout, fdlLayout;
@@ -66,6 +59,7 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 		backIV = (ImageView) findViewById(R.id.backIV);
 		backIV.setOnClickListener(this);
 
+		titleTV = (TextView) findViewById(R.id.titleTV);
 		descTV = (TextView) findViewById(R.id.descTV);
 		oneTV = (TextView) findViewById(R.id.oneTV);
 		unitTV = (TextView) findViewById(R.id.unitTV);
@@ -103,48 +97,28 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 		// 开启一个Fragment事务
 		FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-		// 先隐藏掉所有的Fragment，以防止有多个Fragment显示在界面上的情况
-		hideFragments(transaction);
-
+		BigClassFragment fragment = null;
 		switch (index) {
 		case 0:
 			jzfhTabIV.setImageResource(R.drawable.jizufuhe_pressed_tab);
-			if (jzfhFragment == null) {
-				jzfhFragment = new JZFHFragment();
-				jzfhFragment.setCyclePageChangeListener(this);
-				transaction.add(R.id.content, jzfhFragment);
-			} else {
-				transaction.show(jzfhFragment);
-			}
+			fragment = BigClassFragment.newInstance(FragmentType.JZFH);
 			break;
 		case 1:
 			fdlTabIV.setImageResource(R.drawable.fadianliang_press_tab);
-			if (fdlFragment == null) {
-				fdlFragment = new FDLFragment();
-				transaction.add(R.id.content, fdlFragment);
-			} else {
-				transaction.show(fdlFragment);
-			}
+			fragment = BigClassFragment.newInstance(FragmentType.FDL);
 			break;
 		case 2:
 			fdmhTabIV.setImageResource(R.drawable.fadianmeihao_press_tab);
-			if (fdmhFragment == null) {
-				fdmhFragment = new FDMHFragment();
-				transaction.add(R.id.content, fdmhFragment);
-			} else {
-				transaction.show(fdmhFragment);
-			}
+			fragment = BigClassFragment.newInstance(FragmentType.FDMH);
 			break;
 		case 3:
 			gdmhTabIV.setImageResource(R.drawable.gongdianmeihao_press_tab);
-			if (gdmhFragment == null) {
-				gdmhFragment = new GDMHFragment();
-				transaction.add(R.id.content, gdmhFragment);
-			} else {
-				transaction.show(gdmhFragment);
-			}
+			fragment = BigClassFragment.newInstance(FragmentType.GDMH);
 			break;
 		}
+
+		fragment.setCyclePageChangeListener(this);
+		transaction.replace(R.id.content, fragment);
 		transaction.commit();
 	}
 
@@ -153,21 +127,6 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 		fdmhTabIV.setImageResource(R.drawable.fadianmeihao_tab);
 		gdmhTabIV.setImageResource(R.drawable.gongdianmeihao_tab);
 		fdlTabIV.setImageResource(R.drawable.fadianliang_tab);
-	}
-
-	private void hideFragments(FragmentTransaction transaction) {
-		if (jzfhFragment != null) {
-			transaction.hide(jzfhFragment);
-		}
-		if (fdmhFragment != null) {
-			transaction.hide(fdmhFragment);
-		}
-		if (gdmhFragment != null) {
-			transaction.hide(gdmhFragment);
-		}
-		if (fdlFragment != null) {
-			transaction.hide(fdlFragment);
-		}
 	}
 
 	private void getServerData() {
@@ -201,18 +160,22 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 			back();
 			break;
 		case R.id.jzfh_layout:
+			titleTV.setText(R.string.jizufuhe);
 			unitTV.setText("MW");
 			setTabSelection(0);
 			break;
 		case R.id.fdl_layout:
+			titleTV.setText(R.string.fadianliang);
 			unitTV.setText("万KWH");
 			setTabSelection(1);
 			break;
 		case R.id.fdmh_layout:
+			titleTV.setText(R.string.fadianmeihao);
 			unitTV.setText("g/(kw.h)");
 			setTabSelection(2);
 			break;
 		case R.id.gdmh_layout:
+			titleTV.setText(R.string.gongdianmeihao);
 			unitTV.setText("g/(kw.h)");
 			setTabSelection(3);
 			break;

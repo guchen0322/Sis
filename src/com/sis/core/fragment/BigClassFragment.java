@@ -1,4 +1,4 @@
-package com.sis.core.fragment.bigclass;
+package com.sis.core.fragment;
 
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -22,32 +22,44 @@ import com.sis.core.enums.FragmentType;
 import com.sis.core.fragment.base.BaseFragment;
 import com.sis.core.listener.CyclePageChangeListener;
 
-public class JZFHFragment extends BaseFragment implements OnPageChangeListener, OnCheckedChangeListener {
+public class BigClassFragment extends BaseFragment implements OnPageChangeListener, OnCheckedChangeListener {
 
-	private String[] TITLES = new String[] { "分时", "日统计", "周统计", "月统计", "季统计", "年统计" };
+	private FragmentType fragmentType;
 
 	private HorizontalScrollView indicatorHSV;
 	private RadioGroup indicatorRG;
 	private ImageView indicatorIV;
-
 	private ViewPager mViewPager;
-	private int currentPosition;
+
+	public static BigClassFragment newInstance(FragmentType fragmentType) {
+		BigClassFragment fragment = new BigClassFragment();
+		Bundle args = new Bundle();
+		args.putSerializable(KEY_FRAGMENT_TYPE, fragmentType);
+		fragment.setArguments(args);
+		return fragment;
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		fragmentType = (FragmentType) getArguments().getSerializable(KEY_FRAGMENT_TYPE);
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View jzfhLayout = inflater.inflate(R.layout.fragment_jzfh, container, false);
+		View bigClassLayout = inflater.inflate(R.layout.fragment_big_class, container, false);
 
-		CyclePagerAdapter adapter = new CyclePagerAdapter(getFragmentManager());
-		mViewPager = (ViewPager) jzfhLayout.findViewById(R.id.pager);
+		CyclePagerAdapter adapter = new CyclePagerAdapter(getFragmentManager(), fragmentType);
+		mViewPager = (ViewPager) bigClassLayout.findViewById(R.id.pager);
 		mViewPager.setAdapter(adapter);
 		mViewPager.setOnPageChangeListener(this);
 
-		indicatorHSV = (HorizontalScrollView) jzfhLayout.findViewById(R.id.indicatorHSV);
-		indicatorRG = (RadioGroup) jzfhLayout.findViewById(R.id.indicatorRG);
+		indicatorHSV = (HorizontalScrollView) bigClassLayout.findViewById(R.id.indicatorHSV);
+		indicatorRG = (RadioGroup) bigClassLayout.findViewById(R.id.indicatorRG);
 		indicatorRG.setOnCheckedChangeListener(this);
-		indicatorIV = (ImageView) jzfhLayout.findViewById(R.id.indicatorIV);
+		indicatorIV = (ImageView) bigClassLayout.findViewById(R.id.indicatorIV);
 
-		return jzfhLayout;
+		return bigClassLayout;
 	}
 
 	@Override
@@ -96,7 +108,7 @@ public class JZFHFragment extends BaseFragment implements OnPageChangeListener, 
 	@Override
 	public void onPageSelected(int position) {
 		// 监听切换动作
-		mListener.cycleChange(FragmentType.JZFH, position);
+		mListener.cycleChange(fragmentType, position);
 
 		indicatorRG.check(position);
 
@@ -122,7 +134,6 @@ public class JZFHFragment extends BaseFragment implements OnPageChangeListener, 
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
 		if (group.getChildAt(checkedId) != null) {
 			mViewPager.setCurrentItem(checkedId);
-			currentPosition = checkedId;
 		}
 	}
 

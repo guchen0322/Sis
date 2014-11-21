@@ -15,17 +15,47 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.utils.Legend;
 import com.github.mikephil.charting.utils.Legend.LegendPosition;
 import com.sis.core.R;
+import com.sis.core.enums.FragmentType;
 import com.sis.core.fragment.base.BaseFragment;
 
 public class YearFragment extends BaseFragment {
+	
+	protected FragmentType fragmentType;
+	protected int currColor;
+	
 	protected String[] mParties = new String[] { "Q1季度", "Q2季度", "Q3季度", "Q4季度" };
 	private ArrayList<String> legends;
 
 	private PieChart yearChart;
 
-	public static YearFragment newInstance() {
+	public static YearFragment newInstance(FragmentType fragmentType) {
 		YearFragment fragment = new YearFragment();
+		Bundle args = new Bundle();
+		args.putSerializable(KEY_FRAGMENT_TYPE, fragmentType);
+		fragment.setArguments(args);
 		return fragment;
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		fragmentType = (FragmentType) getArguments().getSerializable(KEY_FRAGMENT_TYPE);
+		switch (fragmentType) {
+		case JZFH:
+			currColor = JZFH_COLOR;
+			break;
+		case FDL:
+			currColor = FDL_COLOR;
+			break;
+		case FDMH:
+			currColor = FDMH_COLOR;
+			break;
+		case GDMH:
+			currColor = GDMH_COLOR;
+			break;
+		default:
+			break;
+		}
 	}
 
 	@Override

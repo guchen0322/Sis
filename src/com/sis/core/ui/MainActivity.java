@@ -84,7 +84,6 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
 				transaction.show(ucFragment);
 			}
 			break;
-
 		default:
 			break;
 		}

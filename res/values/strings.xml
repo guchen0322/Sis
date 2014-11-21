@@ -8,5 +8,8 @@
 
     <string name="weijiece">微决策</string>
     <string name="jizufuhe">机组负荷</string>
+    <string name="fadianliang">发电量</string>
+    <string name="fadianmeihao">发电煤耗</string>
+    <string name="gongdianmeihao">供电煤耗</string>
 
 </resources>

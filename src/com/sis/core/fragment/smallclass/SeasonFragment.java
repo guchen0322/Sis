@@ -15,18 +15,47 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.utils.Legend;
 import com.github.mikephil.charting.utils.Legend.LegendPosition;
 import com.sis.core.R;
+import com.sis.core.enums.FragmentType;
 import com.sis.core.fragment.base.BaseFragment;
 
 public class SeasonFragment extends BaseFragment {
 
+	protected FragmentType fragmentType;
+	protected int currColor;
+	
 	private String[] mParties = new String[] { "07月", "08月", "09月" };
 	private ArrayList<String> legends;
 
 	private PieChart seasonChart;
 
-	public static SeasonFragment newInstance() {
+	public static SeasonFragment newInstance(FragmentType fragmentType) {
 		SeasonFragment fragment = new SeasonFragment();
+		Bundle args = new Bundle();
+		args.putSerializable(KEY_FRAGMENT_TYPE, fragmentType);
+		fragment.setArguments(args);
 		return fragment;
+	}
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		fragmentType = (FragmentType) getArguments().getSerializable(KEY_FRAGMENT_TYPE);
+		switch (fragmentType) {
+		case JZFH:
+			currColor = JZFH_COLOR;
+			break;
+		case FDL:
+			currColor = FDL_COLOR;
+			break;
+		case FDMH:
+			currColor = FDMH_COLOR;
+			break;
+		case GDMH:
+			currColor = GDMH_COLOR;
+			break;
+		default:
+			break;
+		}
 	}
 
 	@Override
