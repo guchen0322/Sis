@@ -5,10 +5,12 @@ import java.util.TimerTask;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.sis.core.App;
 import com.sis.core.R;
 import com.sis.core.ui.base.BaseActivity;
+import com.sis.core.utils.PreferenceUtils;
 
 public class StartActivity extends BaseActivity {
 
@@ -28,7 +30,13 @@ public class StartActivity extends BaseActivity {
 	}
 
 	private void startMainActivity() {
-		Intent intent = new Intent(this, LoginActivity.class);
+		Intent intent = null;
+		Log.d("StartActivity", "loginstatus:" + App.getPreferenceUtils().getPreferenceInt(PreferenceUtils.KEY_LOGIN_STATUS));
+		//未登录
+		if(0 == App.getPreferenceUtils().getPreferenceInt(PreferenceUtils.KEY_LOGIN_STATUS))
+			intent = new Intent(this, LoginActivity.class);
+		if(1 == App.getPreferenceUtils().getPreferenceInt(PreferenceUtils.KEY_LOGIN_STATUS))
+			intent = new Intent(this, MainActivity.class);
 		startActivity(intent);
 
 		// 退出栈

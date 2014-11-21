@@ -5,6 +5,7 @@
     <string name="user_name">用户名</string>
     <string name="clear_data">清除数据记录</string>
     <string name="exit">退出</string>
+    <string name="usernamepswderror">用户名或者密码错误</string>
 
     <string name="weijiece">微决策</string>
     <string name="jizufuhe">机组负荷</string>

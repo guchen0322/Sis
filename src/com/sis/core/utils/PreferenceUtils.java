@@ -11,6 +11,7 @@ public class PreferenceUtils {
 	private static final String PREF = "sisPreference";
 
 	public static final String KEY_USER_NAME = "user_name";
+	public static final String KEY_LOGIN_STATUS = "login_status";
 
 	public PreferenceUtils(Context context) {
 		mContext = context;
