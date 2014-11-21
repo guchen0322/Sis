@@ -3,6 +3,7 @@ package com.sis.core.fragment.smallclass;
 import java.util.ArrayList;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +14,8 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.XLabels;
+import com.github.mikephil.charting.utils.XLabels.XLabelPosition;
 import com.github.mikephil.charting.utils.YLabels;
 import com.sis.core.R;
 import com.sis.core.fragment.base.BaseFragment;
@@ -34,16 +35,18 @@ public class DayFragment extends BaseFragment {
 
 		dayChart = (LineChart) dayLayout.findViewById(R.id.dayChart);
 
-		dayChart.setDrawUnitsInChart(true);
-
 		// if enabled, the chart will always start at zero on the y-axis
 		dayChart.setStartAtZero(false);
 
 		// disable the drawing of values into the chart
 		dayChart.setDrawYValues(true);
+		dayChart.setValueTextSize(12.0f);
 
 		dayChart.setDrawBorder(true);
-		dayChart.setBorderPositions(new BorderPosition[] { BorderPosition.BOTTOM });
+		dayChart.setBorderWidth(1);
+		dayChart.setBorderPositions(new BorderPosition[] { BorderPosition.LEFT, BorderPosition.BOTTOM });
+
+		dayChart.setDrawLegend(false);
 
 		// no description text
 		dayChart.setDescription("");
@@ -58,22 +61,28 @@ public class DayFragment extends BaseFragment {
 		dayChart.setDragEnabled(true);
 		dayChart.setScaleEnabled(true);
 		dayChart.setDrawGridBackground(false);
-		dayChart.setDrawVerticalGrid(false);
-		dayChart.setDrawHorizontalGrid(false);
 
 		// if disabled, scaling can be done on x- and y-axis separately
 		dayChart.setPinchZoom(true);
 
-		// add data
-		setData(10, 100);
-
-		dayChart.animateX(2500);
+		dayChart.setDrawVerticalGrid(false);
+		dayChart.setDrawHorizontalGrid(false);
 
 		XLabels xl = dayChart.getXLabels();
-		xl.setTextColor(Color.GREEN);
+		xl.setTextColor(Color.rgb(0, 188, 13));
+		xl.setTypeface(Typeface.DEFAULT_BOLD);
+		xl.setAdjustXLabels(false);
+		xl.setPosition(XLabelPosition.BOTTOM);
 
 		YLabels yl = dayChart.getYLabels();
-		yl.setTextColor(Color.GREEN);
+		yl.setLabelCount(7);
+		yl.setTextColor(Color.rgb(0, 188, 13));
+		yl.setTypeface(Typeface.DEFAULT_BOLD);
+
+		// add data
+		setData(10, 100);
+		
+		dayChart.animateX(2000);
 
 		return dayLayout;
 	}
@@ -94,13 +103,11 @@ public class DayFragment extends BaseFragment {
 
 		// create a dataset and give it a type
 		LineDataSet set1 = new LineDataSet(yVals, "");
-		set1.setColor(ColorTemplate.getHoloBlue());
-		set1.setCircleColor(ColorTemplate.getHoloBlue());
-		set1.setLineWidth(2f);
-		set1.setCircleSize(4f);
+		set1.setColor(Color.rgb(0, 188, 13));
+		set1.setCircleColor(Color.rgb(0, 188, 13));
+		set1.setLineWidth(1.5f);
 		set1.setFillAlpha(65);
-		set1.setFillColor(ColorTemplate.getHoloBlue());
-		set1.setHighLightColor(Color.rgb(244, 117, 117));
+		set1.setFillColor(Color.rgb(0, 188, 13));
 
 		ArrayList<LineDataSet> dataSets = new ArrayList<LineDataSet>();
 		dataSets.add(set1); // add the datasets

@@ -1,8 +1,11 @@
 package com.sis.core.ui;
 
+import org.apache.http.Header;
+
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CompoundButton;
@@ -12,14 +15,18 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.sis.core.R;
+import com.sis.core.entity.ResInfo;
 import com.sis.core.enums.FragmentType;
 import com.sis.core.fragment.bigclass.FDLFragment;
 import com.sis.core.fragment.bigclass.FDMHFragment;
 import com.sis.core.fragment.bigclass.GDMHFragment;
 import com.sis.core.fragment.bigclass.JZFHFragment;
 import com.sis.core.listener.CyclePageChangeListener;
+import com.sis.core.net.SISHttpClient;
 import com.sis.core.ui.base.BaseFragmentActivity;
+import com.sis.core.utils.JsonUtil;
 import com.sis.core.widget.switchView.SwitchButton;
 
 public class DataStatisticsActivity extends BaseFragmentActivity implements OnClickListener, CyclePageChangeListener {
@@ -35,10 +42,8 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 	private TextView descTV, oneTV, unitTV, twoTV, thirdTV;
 	private RelativeLayout thirdDataRL;
 
-	private View jzfhLayout;
-	private View fdmhLayout;
-	private View gdmhLayout;
-	private View fdlLayout;
+	private View jzfhLayout, fdmhLayout, gdmhLayout, fdlLayout;
+	private ImageView jzfhTabIV, fdlTabIV, fdmhTabIV, gdmhTabIV;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -77,6 +82,10 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 			}
 		});
 
+		jzfhTabIV = (ImageView) findViewById(R.id.jzfhTabIV);
+		fdlTabIV = (ImageView) findViewById(R.id.fdlTabIV);
+		fdmhTabIV = (ImageView) findViewById(R.id.fdmhTabIV);
+		gdmhTabIV = (ImageView) findViewById(R.id.gdmhTabIV);
 		jzfhLayout = findViewById(R.id.jzfh_layout);
 		fdmhLayout = findViewById(R.id.fdmh_layout);
 		gdmhLayout = findViewById(R.id.gdmh_layout);
@@ -99,6 +108,7 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 
 		switch (index) {
 		case 0:
+			jzfhTabIV.setImageResource(R.drawable.jizufuhe_pressed_tab);
 			if (jzfhFragment == null) {
 				jzfhFragment = new JZFHFragment();
 				jzfhFragment.setCyclePageChangeListener(this);
@@ -108,22 +118,7 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 			}
 			break;
 		case 1:
-			if (fdmhFragment == null) {
-				fdmhFragment = new FDMHFragment();
-				transaction.add(R.id.content, fdmhFragment);
-			} else {
-				transaction.show(fdmhFragment);
-			}
-			break;
-		case 2:
-			if (gdmhFragment == null) {
-				gdmhFragment = new GDMHFragment();
-				transaction.add(R.id.content, gdmhFragment);
-			} else {
-				transaction.show(gdmhFragment);
-			}
-			break;
-		case 3:
+			fdlTabIV.setImageResource(R.drawable.fadianliang_press_tab);
 			if (fdlFragment == null) {
 				fdlFragment = new FDLFragment();
 				transaction.add(R.id.content, fdlFragment);
@@ -131,12 +126,33 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 				transaction.show(fdlFragment);
 			}
 			break;
+		case 2:
+			fdmhTabIV.setImageResource(R.drawable.fadianmeihao_press_tab);
+			if (fdmhFragment == null) {
+				fdmhFragment = new FDMHFragment();
+				transaction.add(R.id.content, fdmhFragment);
+			} else {
+				transaction.show(fdmhFragment);
+			}
+			break;
+		case 3:
+			gdmhTabIV.setImageResource(R.drawable.gongdianmeihao_press_tab);
+			if (gdmhFragment == null) {
+				gdmhFragment = new GDMHFragment();
+				transaction.add(R.id.content, gdmhFragment);
+			} else {
+				transaction.show(gdmhFragment);
+			}
+			break;
 		}
 		transaction.commit();
 	}
 
 	private void clearSelection() {
-
+		jzfhTabIV.setImageResource(R.drawable.jizufuhe_tab);
+		fdmhTabIV.setImageResource(R.drawable.fadianmeihao_tab);
+		gdmhTabIV.setImageResource(R.drawable.gongdianmeihao_tab);
+		fdlTabIV.setImageResource(R.drawable.fadianliang_tab);
 	}
 
 	private void hideFragments(FragmentTransaction transaction) {
@@ -155,51 +171,27 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 	}
 
 	private void getServerData() {
-		/*
-		RequestParams params = new RequestParams();
-		params.put("quid", "1");
-		// params.put("startTime", "2014-09-26 09:00:00");
-		// params.put("endTime", "2014-09-26 10:00:01");
-		SISHttpClient.post("http://121.42.12.128/REST/question/getansersbyqid", params, new BaseJsonHttpResponseHandler<ResInfo>() {
+		SISHttpClient
+				.get("http://oa.sygpp.com/SACSIS/HOUR/SACSIS/getallsacsisforgetparam?type=1&startTime=2014-09-26 09:00:00&endTime=2014-09-26 10:00:01",
+						new BaseJsonHttpResponseHandler<ResInfo>() {
 
-			@Override
-			public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, ResInfo errorResponse) {
+							@Override
+							public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData,
+									ResInfo errorResponse) {
 
-			}
+							}
 
-			@Override
-			public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, ResInfo resInfo) {
-				if (resInfo != null) {
+							@Override
+							public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, ResInfo resInfo) {
 
-				}
-			}
+							}
 
-			@Override
-			protected ResInfo parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-				Log.i("zhang.h", rawJsonData);
-				return JsonUtil.getResInfo(rawJsonData);
-			}
-		});
-		
-		SISHttpClient.get("http://121.42.12.128/REST/communication/getAllCommuncaion", new BaseJsonHttpResponseHandler<ResInfo>() {
-
-			@Override
-			public void onFailure(int arg0, Header[] arg1, Throwable arg2, String arg3, ResInfo arg4) {
-				
-			}
-
-			@Override
-			public void onSuccess(int arg0, Header[] arg1, String arg2, ResInfo arg3) {
-				
-			}
-
-			@Override
-			protected ResInfo parseResponse(String arg0, boolean arg1) throws Throwable {
-				Log.i("zhang.h", arg0);
-				return null;
-			}
-		});
-		*/
+							@Override
+							protected ResInfo parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+								Log.i("zhang.h", rawJsonData);
+								return JsonUtil.getResInfo(rawJsonData);
+							}
+						});
 	}
 
 	@Override

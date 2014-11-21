@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.sis.core.App;
@@ -24,8 +25,8 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
 	private DataStatisticsTabFragment dsFragment;
 	private UserCenterTabFragment ucFragment;
 
-	private View dsLayout;
-	private View ucLayout;
+	private View dsLayout, ucLayout;
+	private ImageView dsTabIV, ucTabIV;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +43,8 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
 	}
 
 	private void initViews() {
+		dsTabIV = (ImageView) findViewById(R.id.dsTabIV);
+		ucTabIV = (ImageView) findViewById(R.id.ucTabIV);
 		dsLayout = findViewById(R.id.ds_layout);
 		ucLayout = findViewById(R.id.uc_layout);
 		dsLayout.setOnClickListener(this);
@@ -60,6 +63,7 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
 
 		switch (index) {
 		case 0:
+			dsTabIV.setImageResource(R.drawable.data_statistics_press_tab);
 			if (dsFragment == null) {
 				// 如果DataStatisticsTabFragment为空，则创建一个并添加到界面上
 				dsFragment = new DataStatisticsTabFragment();
@@ -70,6 +74,7 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
 			}
 			break;
 		case 1:
+			ucTabIV.setImageResource(R.drawable.user_center_press_tab);
 			if (ucFragment == null) {
 				// 如果UserCenterTabFragment为空，则创建一个并添加到界面上
 				ucFragment = new UserCenterTabFragment();
@@ -87,7 +92,8 @@ public class MainActivity extends BaseFragmentActivity implements OnClickListene
 	}
 
 	private void clearSelection() {
-
+		dsTabIV.setImageResource(R.drawable.data_statistics_tab);
+		ucTabIV.setImageResource(R.drawable.user_center_tab);
 	}
 
 	private void hideFragments(FragmentTransaction transaction) {

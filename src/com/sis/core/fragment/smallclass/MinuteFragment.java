@@ -3,6 +3,7 @@ package com.sis.core.fragment.smallclass;
 import java.util.ArrayList;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +13,9 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.utils.XLabels;
 import com.github.mikephil.charting.utils.YLabels;
+import com.github.mikephil.charting.utils.XLabels.XLabelPosition;
 import com.sis.core.R;
 import com.sis.core.fragment.base.BaseFragment;
 
@@ -30,13 +33,14 @@ public class MinuteFragment extends BaseFragment {
 		View minuteLayout = inflater.inflate(R.layout.fragment_minute, container, false);
 
 		minuteChart = (LineChart) minuteLayout.findViewById(R.id.minuteChart);
-		minuteChart.setStartAtZero(true);
+		// if enabled, the chart will always start at zero on the y-axis
+		minuteChart.setStartAtZero(false);
 
 		// disable the drawing of values into the chart
 		minuteChart.setDrawYValues(true);
+		minuteChart.setValueTextSize(12.0f);
 
 		minuteChart.setDrawBorder(false);
-
 		minuteChart.setDrawLegend(false);
 
 		// no description text
@@ -58,8 +62,16 @@ public class MinuteFragment extends BaseFragment {
 		minuteChart.setDrawGridBackground(false);
 		minuteChart.setDrawVerticalGrid(false);
 
+		XLabels x = minuteChart.getXLabels();
+		x.setTextColor(Color.rgb(0, 188, 13));
+		x.setTypeface(Typeface.DEFAULT_BOLD);
+		x.setAdjustXLabels(false);
+		x.setPosition(XLabelPosition.BOTTOM);
+
 		YLabels y = minuteChart.getYLabels();
-		y.setLabelCount(10);
+		y.setLabelCount(7);
+		y.setTextColor(Color.rgb(0, 188, 13));
+		y.setTypeface(Typeface.DEFAULT_BOLD);
 
 		// add data
 		setData(10, 100);
@@ -86,15 +98,12 @@ public class MinuteFragment extends BaseFragment {
 		}
 
 		// create a dataset and give it a type
-		LineDataSet set1 = new LineDataSet(vals1, "DataSet 1");
-		set1.setDrawCubic(true);
-		set1.setCubicIntensity(0.2f);
+		LineDataSet set1 = new LineDataSet(vals1, "");
 		set1.setDrawFilled(true);
 		set1.setDrawCircles(false);
-		set1.setLineWidth(2f);
-		set1.setCircleSize(5f);
-		set1.setHighLightColor(Color.rgb(244, 117, 117));
-		set1.setColor(Color.rgb(104, 241, 175));
+		set1.setFillAlpha(255);
+		set1.setFillColor(Color.rgb(0, 188, 13));
+		set1.setColor(Color.rgb(0, 188, 13));
 
 		ArrayList<LineDataSet> dataSets = new ArrayList<LineDataSet>();
 		dataSets.add(set1);

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.sis.core.App;
+import com.sis.core.R;
 
 /**
  * Activity基类
@@ -40,6 +41,7 @@ public class BaseActivity extends Activity {
 	public void onBackPressed() {
 		super.onBackPressed();
 		App.getActivityManager().popActivity(this);
+		overridePendingTransition(R.anim.move_left_in_activity, R.anim.move_right_out_activity);
 	}
-
+	
 }
