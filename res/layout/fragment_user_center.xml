@@ -36,10 +36,10 @@
                     android:textSize="20sp" />
 
                 <TextView
+                    android:id="@+id/login_account"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:text="zhangsan"
                     android:textColor="@color/black" />
             </RelativeLayout>
 

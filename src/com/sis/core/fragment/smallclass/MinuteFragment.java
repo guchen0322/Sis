@@ -1,9 +1,15 @@
 package com.sis.core.fragment.smallclass;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
+import org.apache.http.Header;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +21,13 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.utils.XLabels;
 import com.github.mikephil.charting.utils.XLabels.XLabelPosition;
 import com.github.mikephil.charting.utils.YLabels;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.sis.core.R;
+import com.sis.core.entity.ResInfo;
 import com.sis.core.enums.FragmentType;
 import com.sis.core.fragment.base.BaseFragment;
+import com.sis.core.net.SISHttpClient;
+import com.sis.core.utils.JsonUtil;
 
 public class MinuteFragment extends BaseFragment {
 
@@ -102,14 +112,48 @@ public class MinuteFragment extends BaseFragment {
 		y.setTypeface(Typeface.DEFAULT_BOLD);
 
 		// add data
-		setData(10, 100);
+/*		setData(10, 100);
 
 		minuteChart.animateXY(2000, 2000);
 
 		// dont forget to refresh the drawing
-		minuteChart.invalidate();
+		minuteChart.invalidate();*/
+		
+		//get data from server
+		getServerData();
 
 		return minuteLayout;
+	}
+	
+	private void getServerData() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh hh:mm:ss");
+		Date now = new Date();
+		String nowStr = sdf.format(now);
+		Calendar c = Calendar.getInstance();
+		c.setTime(now);;
+		c.add(Calendar.HOUR, -1);
+		String nowBefor = sdf.format(c.getTime());
+		SISHttpClient
+				.get("http://oa.sygpp.com/SACSIS/HOUR/SACSIS/getallsacsisforgetparam?type=1&startTime="+nowBefor+"&endTime="+nowStr+"",
+						new BaseJsonHttpResponseHandler<ResInfo>() {
+
+							@Override
+							public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData,
+									ResInfo errorResponse) {
+
+							}
+
+							@Override
+							public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, ResInfo resInfo) {
+
+							}
+
+							@Override
+							protected ResInfo parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+								Log.i("zhang.h", rawJsonData);
+								return JsonUtil.getResInfo(rawJsonData);
+							}
+						});
 	}
 
 	private void setData(int count, float range) {

@@ -43,6 +43,7 @@ public class LoginActivity extends BaseActivity {
 				}
 				if (userkey != null) {
 					if (accounts.get(userkey).equals(pswd)) {
+						App.getPreferenceUtils().savePreferenceStr(PreferenceUtils.KEY_USER_NAME, userkey);
 						App.getPreferenceUtils().savePreferenceInt(PreferenceUtils.KEY_LOGIN_STATUS, 1);
 						Intent intent = new Intent();
 						intent.setClass(LoginActivity.this, MainActivity.class);
