@@ -14,5 +14,6 @@
     <string name="gongdianmeihao">供电煤耗</string>
     <string name="zhibiaoliebiao">指标列表</string>
     <string name="huanbaoshuju">环保数据</string>
+    <string name="zhuqiwendu">主汽温度</string>
 
 </resources>

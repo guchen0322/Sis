@@ -30,7 +30,9 @@ public class UserCenterTabFragment extends BaseFragment {
 			@Override
 			public void onClick(View arg0) {
 				App.getPreferenceUtils().savePreferenceInt(PreferenceUtils.KEY_LOGIN_STATUS, 0);
+				
 				forwardActivity(LoginActivity.class);
+				App.getActivityManager().popActivity(getActivity());
 			}
 		});
 		return ucLayout;
