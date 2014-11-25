@@ -8,11 +8,9 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
@@ -49,8 +47,8 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 	private ImageView jzfhTabIV, fdlTabIV, fdmhTabIV, gdmhTabIV;
 
 	private PopupWindow mPopWin;
-	private TextView jizu;
-	private TextView jizuTV;
+	private TextView currJZTV;
+	private TextView selJZTV;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -75,7 +73,7 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 		backIV.setOnClickListener(this);
 		jizuSwitchLL = (LinearLayout) findViewById(R.id.jizuSwitchLL);
 		jizuSwitchLL.setOnClickListener(this);
-		jizu = (TextView) findViewById(R.id.jizu);
+		currJZTV = (TextView) findViewById(R.id.currjzTV);
 
 		titleTV = (TextView) findViewById(R.id.titleTV);
 		descTV = (TextView) findViewById(R.id.descTV);
@@ -112,8 +110,8 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 
 	private void initPopWin() {
 		View popView = getLayoutInflater().inflate(R.layout.juzu_switch_pop_win, null);
-		jizuTV = (TextView) popView.findViewById(R.id.jizuTV);
-		jizuTV.setOnClickListener(this);
+		selJZTV = (TextView) popView.findViewById(R.id.seljzTV);
+		selJZTV.setOnClickListener(this);
 		mPopWin = new PopupWindow(popView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
 		mPopWin.setTouchable(true);
 		mPopWin.setOutsideTouchable(true);
@@ -193,16 +191,16 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 			// 弹出popwin
 			if (mPopWin != null) {
 				int px_100 = ScreenUtils.dpToPx(getApplicationContext(), 100);
-				jizuTV.setWidth(px_100);
+				selJZTV.setWidth(px_100);
 				int xoff = (int) ScreenUtils.screenWidth() - px_100;
 				mPopWin.showAsDropDown(titleRL, xoff - 5, 5);
 			}
 			break;
-		case R.id.jizuTV:
-			String currJZ = jizu.getText().toString();
-			String selJZ = jizuTV.getText().toString();
-			jizu.setText(selJZ);
-			jizuTV.setText(currJZ);
+		case R.id.seljzTV:
+			String currJZ = currJZTV.getText().toString();
+			String selJZ = selJZTV.getText().toString();
+			currJZTV.setText(selJZ);
+			selJZTV.setText(currJZ);
 			if (mPopWin != null)
 				mPopWin.dismiss();
 			break;
