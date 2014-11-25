@@ -6,6 +6,7 @@
     android:orientation="vertical" >
 
     <RelativeLayout
+        android:id="@+id/titleRL"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/top_bg_color"
@@ -29,6 +30,30 @@
             android:text="@string/jizufuhe"
             android:textColor="@color/white"
             android:textSize="25sp" />
+
+        <LinearLayout
+            android:id="@+id/jizuSwitchLL"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal"
+            android:paddingRight="5dp" >
+
+            <TextView
+                android:id="@+id/jizu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:text="1号机组"
+                android:textColor="@color/white" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/jizu_switch" />
+        </LinearLayout>
     </RelativeLayout>
 
     <RelativeLayout

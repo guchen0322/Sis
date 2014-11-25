@@ -2,15 +2,22 @@ package com.sis.core.ui;
 
 import org.apache.http.Header;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,19 +31,26 @@ import com.sis.core.listener.CyclePageChangeListener;
 import com.sis.core.net.SISHttpClient;
 import com.sis.core.ui.base.BaseFragmentActivity;
 import com.sis.core.utils.JsonUtil;
+import com.sis.core.utils.ScreenUtils;
 import com.sis.core.widget.switchView.SwitchButton;
 
 public class DataStatisticsActivity extends BaseFragmentActivity implements OnClickListener, CyclePageChangeListener {
 
 	private FragmentManager fragmentManager;
 
+	private RelativeLayout titleRL;
 	private ImageView backIV;
+	private LinearLayout jizuSwitchLL;
 	private SwitchButton dataCompareSB;
 	private TextView titleTV, descTV, oneTV, unitTV, twoTV, thirdTV;
 	private RelativeLayout thirdDataRL;
 
 	private View jzfhLayout, fdmhLayout, gdmhLayout, fdlLayout;
 	private ImageView jzfhTabIV, fdlTabIV, fdmhTabIV, gdmhTabIV;
+
+	private PopupWindow mPopWin;
+	private TextView jizu;
+	private TextView jizuTV;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -56,8 +70,12 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 	}
 
 	private void initViews() {
+		titleRL = (RelativeLayout) findViewById(R.id.titleRL);
 		backIV = (ImageView) findViewById(R.id.backIV);
 		backIV.setOnClickListener(this);
+		jizuSwitchLL = (LinearLayout) findViewById(R.id.jizuSwitchLL);
+		jizuSwitchLL.setOnClickListener(this);
+		jizu = (TextView) findViewById(R.id.jizu);
 
 		titleTV = (TextView) findViewById(R.id.titleTV);
 		descTV = (TextView) findViewById(R.id.descTV);
@@ -88,6 +106,18 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 		fdmhLayout.setOnClickListener(this);
 		gdmhLayout.setOnClickListener(this);
 		fdlLayout.setOnClickListener(this);
+
+		initPopWin();
+	}
+
+	private void initPopWin() {
+		View popView = getLayoutInflater().inflate(R.layout.juzu_switch_pop_win, null);
+		jizuTV = (TextView) popView.findViewById(R.id.jizuTV);
+		jizuTV.setOnClickListener(this);
+		mPopWin = new PopupWindow(popView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+		mPopWin.setTouchable(true);
+		mPopWin.setOutsideTouchable(true);
+		mPopWin.setBackgroundDrawable(new BitmapDrawable(getResources(), (Bitmap) null));
 	}
 
 	private void setTabSelection(int index) {
@@ -158,6 +188,23 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 		switch (v.getId()) {
 		case R.id.backIV:
 			back();
+			break;
+		case R.id.jizuSwitchLL:
+			// 弹出popwin
+			if (mPopWin != null) {
+				int px_100 = ScreenUtils.dpToPx(getApplicationContext(), 100);
+				jizuTV.setWidth(px_100);
+				int xoff = (int) ScreenUtils.screenWidth() - px_100;
+				mPopWin.showAsDropDown(titleRL, xoff - 5, 5);
+			}
+			break;
+		case R.id.jizuTV:
+			String currJZ = jizu.getText().toString();
+			String selJZ = jizuTV.getText().toString();
+			jizu.setText(selJZ);
+			jizuTV.setText(currJZ);
+			if (mPopWin != null)
+				mPopWin.dismiss();
 			break;
 		case R.id.jzfh_layout:
 			titleTV.setText(R.string.jizufuhe);
