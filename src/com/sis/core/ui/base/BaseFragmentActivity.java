@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
 import com.sis.core.App;
-import com.sis.core.R;
 
 /**
  * FragmentActivity基类
@@ -41,7 +40,6 @@ public class BaseFragmentActivity extends FragmentActivity {
 	public void onBackPressed() {
 		super.onBackPressed();
 		App.getActivityManager().popActivity(this);
-		overridePendingTransition(R.anim.move_left_in_activity, R.anim.move_right_out_activity);
 	}
 
 }
