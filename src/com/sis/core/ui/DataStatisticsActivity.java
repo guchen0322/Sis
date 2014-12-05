@@ -1,13 +1,10 @@
 package com.sis.core.ui;
 
-import org.apache.http.Header;
-
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -20,15 +17,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.sis.core.R;
-import com.sis.core.entity.ResInfo;
 import com.sis.core.enums.FragmentType;
 import com.sis.core.fragment.BigClassFragment;
 import com.sis.core.listener.CyclePageChangeListener;
-import com.sis.core.net.SISHttpClient;
 import com.sis.core.ui.base.BaseFragmentActivity;
-import com.sis.core.utils.JsonUtil;
 import com.sis.core.utils.ScreenUtils;
 import com.sis.core.widget.switchView.SwitchButton;
 
@@ -62,9 +55,6 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 
 		// 第一次启动时选中第0个tab
 		setTabSelection(0);
-
-		// 请求数据
-		//getServerData();
 	}
 
 	private void initViews() {
@@ -155,30 +145,6 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 		fdmhTabIV.setImageResource(R.drawable.fadianmeihao_tab);
 		gdmhTabIV.setImageResource(R.drawable.gongdianmeihao_tab);
 		fdlTabIV.setImageResource(R.drawable.fadianliang_tab);
-	}
-
-	private void getServerData() {
-		SISHttpClient
-				.get("http://oa.sygpp.com/SACSIS/HOUR/SACSIS/getallsacsisforgetparam?type=1&startTime=2014-09-26 09:00:00&endTime=2014-09-26 10:00:01",
-						new BaseJsonHttpResponseHandler<ResInfo>() {
-
-							@Override
-							public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData,
-									ResInfo errorResponse) {
-
-							}
-
-							@Override
-							public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, ResInfo resInfo) {
-
-							}
-
-							@Override
-							protected ResInfo parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-								Log.i("zhang.h", rawJsonData);
-								return JsonUtil.getResInfo(rawJsonData);
-							}
-						});
 	}
 
 	@Override

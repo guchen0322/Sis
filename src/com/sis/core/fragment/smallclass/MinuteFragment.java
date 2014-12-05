@@ -114,13 +114,8 @@ public class MinuteFragment extends BaseFragment {
 
 		minuteChart.animateXY(2000, 2000);
 		// add data
-		/*
-		 * setData(10, 100);
-		 * 
-		 * minuteChart.animateXY(2000, 2000);
-		 * 
-		 * // dont forget to refresh the drawing minuteChart.invalidate();
-		 */
+		// setData(10, 100);
+		// dont forget to refresh the drawing minuteChart.invalidate();
 
 		// get data from server
 		getServerData();

@@ -2,7 +2,7 @@ package com.sis.core.entity;
 
 public class SYGP {
 	private String PARAID;
-	private String VALUE;
+	private String YVALUE;
 	private String XVALUE;
 
 	public String getPARAID() {
@@ -14,11 +14,11 @@ public class SYGP {
 	}
 
 	public String getYVALUE() {
-		return VALUE;
+		return YVALUE;
 	}
 
 	public void setYVALUE(String vALUE) {
-		VALUE = vALUE;
+		YVALUE = vALUE;
 	}
 
 	public String getXVALUE() {

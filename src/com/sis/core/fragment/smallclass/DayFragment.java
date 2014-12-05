@@ -35,7 +35,7 @@ public class DayFragment extends BaseFragment {
 
 	protected FragmentType fragmentType;
 	protected int currColor;
-	
+
 	private LineChart dayChart;
 
 	public static DayFragment newInstance(FragmentType fragmentType) {
@@ -45,7 +45,7 @@ public class DayFragment extends BaseFragment {
 		fragment.setArguments(args);
 		return fragment;
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -119,69 +119,65 @@ public class DayFragment extends BaseFragment {
 		yl.setTypeface(Typeface.DEFAULT_BOLD);
 
 		// add data
-		//setData(10, 100);
-		
+		// setData(10, 100);
+
 		dayChart.animateX(2000);
-		
+
 		getServerData();
 
 		return dayLayout;
 	}
-	
+
 	private void getServerData() {
 		String start = TimeUtils.getStartTime(60);
 		String end = TimeUtils.getEndTime(60);
-		String url = "http://oa.sygpp.com:8091/home/getdatabyday?starttime="+start+"&endtime="+end+"&type=01";
+		String url = "http://oa.sygpp.com:8091/home/getdatabyday?starttime=" + start + "&endtime=" + end + "&type=01";
 		Log.d("zhang.h", url);
-		SISHttpClient.get(url,new BaseJsonHttpResponseHandler<ResInfo>() {
+		SISHttpClient.get(url, new BaseJsonHttpResponseHandler<ResInfo>() {
 
-							@Override
-							public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData,
-									ResInfo errorResponse) {
+			@Override
+			public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, ResInfo errorResponse) {
 
-							}
+			}
 
-							@Override
-							public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, ResInfo resInfo) {
-								
-							}
+			@Override
+			public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, ResInfo resInfo) {
 
-							@Override
-							protected ResInfo parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-								Log.d("zhang.h", rawJsonData);
-								ResInfo info = JsonUtil.getResInfo(rawJsonData,1);
-								ArrayList<SYGP> data = info.getSygps();
-								Log.d("zhang.h", "data size=" + data.size());
-								//给数据集设置X轴时间值 
-								setData2(data);
-								handler.sendEmptyMessage(0);
-								return null;
-							}
-						});
+			}
+
+			@Override
+			protected ResInfo parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+				Log.d("zhang.h", rawJsonData);
+				ResInfo info = JsonUtil.getResInfo(rawJsonData, 1);
+				ArrayList<SYGP> data = info.getSygps();
+				Log.d("zhang.h", "data size=" + data.size());
+				// 给数据集设置X轴时间值
+				setData2(data);
+				handler.sendEmptyMessage(0);
+				return null;
+			}
+		});
 	}
-	
-	Handler handler = new Handler(){
+
+	Handler handler = new Handler() {
 
 		@Override
 		public void handleMessage(Message msg) {
-			// TODO Auto-generated method stub
 			super.handleMessage(msg);
-			// dont forget to refresh the drawing
 			dayChart.invalidate();
 		}
-		
 	};
-	
-	private void setData2(ArrayList<SYGP> data){
+
+	private void setData2(ArrayList<SYGP> data) {
 		ArrayList<String> xVals = new ArrayList<String>();
 		ArrayList<Entry> vals1 = new ArrayList<Entry>();
-		//倒叙排列
-		for(int i = data.size() - 1; i >= 0; i--){
+		// 倒叙排列
+		for (int i = data.size() - 1; i >= 0; i--) {
 			xVals.add(TimeUtils.formatTime(data.get(i).getXVALUE()));
-			//y轴数据   x坐标点位
+			// y轴数据 x坐标点位
 			vals1.add(new Entry(Float.parseFloat(data.get(i).getYVALUE()), data.size() - i - 1));
 		}
-		
+
 		// create a dataset and give it a type
 		LineDataSet set1 = new LineDataSet(vals1, "");
 		set1.setDrawFilled(true);
