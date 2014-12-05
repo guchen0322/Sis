@@ -9,6 +9,8 @@ import org.apache.http.Header;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,10 +26,12 @@ import com.github.mikephil.charting.utils.YLabels;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.sis.core.R;
 import com.sis.core.entity.ResInfo;
+import com.sis.core.entity.SYGP;
 import com.sis.core.enums.FragmentType;
 import com.sis.core.fragment.base.BaseFragment;
 import com.sis.core.net.SISHttpClient;
 import com.sis.core.utils.JsonUtil;
+import com.sis.core.utils.TimeUtils;
 
 public class MinuteFragment extends BaseFragment {
 
@@ -110,7 +114,8 @@ public class MinuteFragment extends BaseFragment {
 		y.setLabelCount(7);
 		y.setTextColor(currColor);
 		y.setTypeface(Typeface.DEFAULT_BOLD);
-
+		
+		minuteChart.animateXY(2000, 2000);
 		// add data
 /*		setData(10, 100);
 
@@ -120,22 +125,17 @@ public class MinuteFragment extends BaseFragment {
 		minuteChart.invalidate();*/
 		
 		//get data from server
-		getServerData();
+		//getServerData();
 
 		return minuteLayout;
 	}
 	
 	private void getServerData() {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh hh:mm:ss");
-		Date now = new Date();
-		String nowStr = sdf.format(now);
-		Calendar c = Calendar.getInstance();
-		c.setTime(now);;
-		c.add(Calendar.HOUR, -1);
-		String nowBefor = sdf.format(c.getTime());
-		SISHttpClient
-				.get("http://oa.sygpp.com/SACSIS/HOUR/SACSIS/getallsacsisforgetparam?type=1&startTime="+nowBefor+"&endTime="+nowStr+"",
-						new BaseJsonHttpResponseHandler<ResInfo>() {
+		String start = TimeUtils.getStartTime(5);
+		String end = TimeUtils.getEndTime(5);
+		String url = "http://oa.sygpp.com:8091/home/getdatabyhour?starttime="+start+"&endtime="+end+"&type=01";
+		Log.d("zhang.h", url);
+		SISHttpClient.get(url,new BaseJsonHttpResponseHandler<ResInfo>() {
 
 							@Override
 							public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData,
@@ -145,30 +145,45 @@ public class MinuteFragment extends BaseFragment {
 
 							@Override
 							public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, ResInfo resInfo) {
-
+								
 							}
 
 							@Override
 							protected ResInfo parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-								Log.i("zhang.h", rawJsonData);
-								return JsonUtil.getResInfo(rawJsonData);
+								Log.d("zhang.h", rawJsonData);
+								ResInfo info = JsonUtil.getResInfo(rawJsonData,1);
+								ArrayList<SYGP> data = info.getSygps();
+								Log.d("zhang.h", "data size=" + data.size());
+								//给数据集设置X轴时间值 
+								setData2(data);
+								handler.sendEmptyMessage(0);
+								return null;
 							}
 						});
 	}
+	
+	Handler handler = new Handler(){
 
-	private void setData(int count, float range) {
+		@Override
+		public void handleMessage(Message msg) {
+			// TODO Auto-generated method stub
+			super.handleMessage(msg);
+			// dont forget to refresh the drawing
+			minuteChart.invalidate();
+		}
+		
+	};
+	
+	private void setData2(ArrayList<SYGP> data){
 		ArrayList<String> xVals = new ArrayList<String>();
-		for (int i = 0; i < count; i++) {
-			xVals.add((1990 + i) + "");
-		}
-
 		ArrayList<Entry> vals1 = new ArrayList<Entry>();
-		for (int i = 0; i < count; i++) {
-			float mult = (range + 1);
-			float val = (float) (Math.random() * mult) + 20;
-			vals1.add(new Entry(val, i));
+		//倒叙排列
+		for(int i = data.size() - 1; i >= 0; i--){
+			xVals.add(TimeUtils.formatTime(data.get(i).getXVALUE()));
+			//y轴数据   x坐标点位
+			vals1.add(new Entry(Float.parseFloat(data.get(i).getYVALUE()), data.size() - i - 1));
 		}
-
+		
 		// create a dataset and give it a type
 		LineDataSet set1 = new LineDataSet(vals1, "");
 		set1.setDrawFilled(true);
@@ -181,9 +196,10 @@ public class MinuteFragment extends BaseFragment {
 		dataSets.add(set1);
 
 		// create a data object with the datasets
-		LineData data = new LineData(xVals, dataSets);
+		LineData lineData = new LineData(xVals, dataSets);
 
 		// set data
-		minuteChart.setData(data);
+		minuteChart.setData(lineData);
 	}
+
 }

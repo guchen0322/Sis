@@ -64,7 +64,7 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 		setTabSelection(0);
 
 		// 请求数据
-		getServerData();
+		//getServerData();
 	}
 
 	private void initViews() {

@@ -2,8 +2,13 @@ package com.sis.core.fragment.smallclass;
 
 import java.util.ArrayList;
 
+import org.apache.http.Header;
+
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +21,15 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.utils.XLabels;
 import com.github.mikephil.charting.utils.XLabels.XLabelPosition;
 import com.github.mikephil.charting.utils.YLabels;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.sis.core.R;
+import com.sis.core.entity.ResInfo;
+import com.sis.core.entity.SYGP;
 import com.sis.core.enums.FragmentType;
 import com.sis.core.fragment.base.BaseFragment;
+import com.sis.core.net.SISHttpClient;
+import com.sis.core.utils.JsonUtil;
+import com.sis.core.utils.TimeUtils;
 
 public class DayFragment extends BaseFragment {
 
@@ -108,42 +119,84 @@ public class DayFragment extends BaseFragment {
 		yl.setTypeface(Typeface.DEFAULT_BOLD);
 
 		// add data
-		setData(10, 100);
+		//setData(10, 100);
 		
 		dayChart.animateX(2000);
+		
+		getServerData();
 
 		return dayLayout;
 	}
+	
+	private void getServerData() {
+		String start = TimeUtils.getStartTime(60);
+		String end = TimeUtils.getEndTime(60);
+		String url = "http://oa.sygpp.com:8091/home/getdatabyday?starttime="+start+"&endtime="+end+"&type=01";
+		Log.d("zhang.h", url);
+		SISHttpClient.get(url,new BaseJsonHttpResponseHandler<ResInfo>() {
 
-	private void setData(int count, float range) {
+							@Override
+							public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData,
+									ResInfo errorResponse) {
+
+							}
+
+							@Override
+							public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, ResInfo resInfo) {
+								
+							}
+
+							@Override
+							protected ResInfo parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+								Log.d("zhang.h", rawJsonData);
+								ResInfo info = JsonUtil.getResInfo(rawJsonData,1);
+								ArrayList<SYGP> data = info.getSygps();
+								Log.d("zhang.h", "data size=" + data.size());
+								//给数据集设置X轴时间值 
+								setData2(data);
+								handler.sendEmptyMessage(0);
+								return null;
+							}
+						});
+	}
+	
+	Handler handler = new Handler(){
+
+		@Override
+		public void handleMessage(Message msg) {
+			// TODO Auto-generated method stub
+			super.handleMessage(msg);
+			// dont forget to refresh the drawing
+			dayChart.invalidate();
+		}
+		
+	};
+	
+	private void setData2(ArrayList<SYGP> data){
 		ArrayList<String> xVals = new ArrayList<String>();
-		for (int i = 0; i < count; i++) {
-			xVals.add((i) + "");
+		ArrayList<Entry> vals1 = new ArrayList<Entry>();
+		//倒叙排列
+		for(int i = data.size() - 1; i >= 0; i--){
+			xVals.add(TimeUtils.formatTime(data.get(i).getXVALUE()));
+			//y轴数据   x坐标点位
+			vals1.add(new Entry(Float.parseFloat(data.get(i).getYVALUE()), data.size() - i - 1));
 		}
-
-		ArrayList<Entry> yVals = new ArrayList<Entry>();
-
-		for (int i = 0; i < count; i++) {
-			float mult = (range + 1);
-			float val = (float) (Math.random() * mult) + 3;
-			yVals.add(new Entry(val, i));
-		}
-
+		
 		// create a dataset and give it a type
-		LineDataSet set1 = new LineDataSet(yVals, "");
-		set1.setColor(currColor);
-		set1.setCircleColor(currColor);
-		set1.setLineWidth(1.5f);
-		set1.setFillAlpha(65);
+		LineDataSet set1 = new LineDataSet(vals1, "");
+		set1.setDrawFilled(true);
+		set1.setDrawCircles(false);
+		set1.setFillAlpha(255);
 		set1.setFillColor(currColor);
+		set1.setColor(currColor);
 
 		ArrayList<LineDataSet> dataSets = new ArrayList<LineDataSet>();
-		dataSets.add(set1); // add the datasets
+		dataSets.add(set1);
 
 		// create a data object with the datasets
-		LineData data = new LineData(xVals, dataSets);
+		LineData lineData = new LineData(xVals, dataSets);
 
 		// set data
-		dayChart.setData(data);
+		dayChart.setData(lineData);
 	}
 }
