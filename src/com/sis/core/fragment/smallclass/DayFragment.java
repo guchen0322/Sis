@@ -173,7 +173,7 @@ public class DayFragment extends BaseFragment {
 		ArrayList<Entry> vals1 = new ArrayList<Entry>();
 		// 倒叙排列
 		for (int i = data.size() - 1; i >= 0; i--) {
-			xVals.add(TimeUtils.formatTime(data.get(i).getXVALUE()));
+			xVals.add(TimeUtils.formatTime(data.get(i).getXVALUE(),"HH:mm"));
 			// y轴数据 x坐标点位
 			vals1.add(new Entry(Float.parseFloat(data.get(i).getYVALUE()), data.size() - i - 1));
 		}

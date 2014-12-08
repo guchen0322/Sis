@@ -31,14 +31,29 @@ public class TimeUtils {
 
 	}
 	
-	public static String formatTime(String time){
+	public static String formatTime(String time,String pattern){
 		String strDate = null;
 		try {
 			Date date = new SimpleDateFormat("yyy-MM-dd HH:mm:ss").parse(time);
-			strDate = new SimpleDateFormat("HH:mm").format(date); 
+			strDate = new SimpleDateFormat(pattern).format(date); 
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		return strDate;
+	}
+	
+	public static String getWeekStartTime(Date now) {
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
+				Locale.CHINA).format(now);
+
+	}
+	
+	public static String getWeekEndime(Date now) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(now);
+		c.add(Calendar.DATE, -7);
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
+				Locale.CHINA).format(c.getTime());
+
 	}
 }

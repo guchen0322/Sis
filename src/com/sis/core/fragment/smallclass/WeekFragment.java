@@ -1,10 +1,16 @@
 package com.sis.core.fragment.smallclass;
 
 import java.util.ArrayList;
+import java.util.Date;
+
+import org.apache.http.Header;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +20,20 @@ import com.github.mikephil.charting.charts.BarLineChartBase.BorderPosition;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.utils.LargeValueFormatter;
 import com.github.mikephil.charting.utils.XLabels;
 import com.github.mikephil.charting.utils.XLabels.XLabelPosition;
 import com.github.mikephil.charting.utils.YLabels;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.sis.core.R;
+import com.sis.core.entity.ResInfo;
+import com.sis.core.entity.SYGP;
 import com.sis.core.enums.FragmentType;
 import com.sis.core.fragment.base.BaseFragment;
+import com.sis.core.net.SISHttpClient;
+import com.sis.core.utils.JsonUtil;
+import com.sis.core.utils.TimeUtils;
 
 public class WeekFragment extends BaseFragment {
 
@@ -98,18 +111,82 @@ public class WeekFragment extends BaseFragment {
 		yl.setTypeface(Typeface.DEFAULT_BOLD);
 
 		// add data
-		setData(7);
+		//setData(7);
 
 		weekChart.animateXY(2000, 2000);
 
 		// dont forget to refresh the drawing
-		weekChart.invalidate();
+		//weekChart.invalidate();
+		
+		getServerData();
 
 		return weekLayout;
+	}
+	
+	private void getServerData() {
+		Date now = new Date();
+		String start = TimeUtils.getWeekStartTime(now);
+		String end = TimeUtils.getWeekEndime(now);
+		String url = "http://oa.sygpp.com:8091/home/getdatabyweek?starttime=" + start + "&endtime=" + end + "&type=01";
+		Log.d("zhang.h", url);
+		SISHttpClient.get(url, new BaseJsonHttpResponseHandler<ResInfo>() {
+
+			@Override
+			public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, ResInfo errorResponse) {
+
+			} 
+
+			@Override
+			public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, ResInfo resInfo) {
+
+			}
+
+			@Override
+			protected ResInfo parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+				ResInfo info = JsonUtil.getResInfo(rawJsonData, 1);
+				ArrayList<SYGP> data = info.getSygps();
+				// 给数据集设置X轴时间值
+				setData2(data);
+				handler.sendEmptyMessage(0);
+				return null;
+			}
+		});
+	}
+
+	Handler handler = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			weekChart.invalidate();
+		}
+	};
+	
+	public void setData2(ArrayList<SYGP> data) {
+		ArrayList<String> xVals = new ArrayList<String>();
+		ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
+		for (int i = data.size() - 1; i >= 0; i--) {
+			xVals.add(TimeUtils.formatTime(data.get(i).getXVALUE(),"MM/dd"));
+			// y轴数据 x坐标点位
+			yVals1.add(new BarEntry(Float.parseFloat(data.get(i).getYVALUE()), data.size() - i - 1));
+		}
+		
+		BarDataSet set1 = new BarDataSet(yVals1, "");
+		set1.setColor(currColor);
+		
+		ArrayList<BarDataSet> dataSets = new ArrayList<BarDataSet>();
+		dataSets.add(set1);
+		
+		BarData barData = new BarData(xVals, dataSets);
+
+		// add space between the dataset groups in percent of bar-width
+		barData.setGroupSpace(110f);
+		weekChart.setData(barData);
 	}
 
 	public void setData(int count) {
 		ArrayList<String> xVals = new ArrayList<String>();
+
 		for (int i = 0; i < count; i++) {
 			xVals.add((i + 1990) + "");
 		}
