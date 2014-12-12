@@ -21,6 +21,7 @@ import com.github.mikephil.charting.utils.XLabels;
 import com.github.mikephil.charting.utils.XLabels.XLabelPosition;
 import com.github.mikephil.charting.utils.YLabels;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.sis.core.Constant;
 import com.sis.core.R;
 import com.sis.core.entity.ResInfo;
 import com.sis.core.entity.SYGP;
@@ -126,7 +127,7 @@ public class MinuteFragment extends BaseFragment {
 	private void getServerData() {
 		String start = TimeUtils.getStartTime(5);
 		String end = TimeUtils.getEndTime(5);
-		String url = "http://oa.sygpp.com:8091/home/getdatabyhour?starttime=" + start + "&endtime=" + end + "&type=01";
+		String url = Constant.MIN_URL + "?starttime=" + start + "&endtime=" + end + "&type=01";
 		Log.d("zhang.h", url);
 		SISHttpClient.get(url, new BaseJsonHttpResponseHandler<ResInfo>() {
 
@@ -142,10 +143,8 @@ public class MinuteFragment extends BaseFragment {
 
 			@Override
 			protected ResInfo parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-				Log.d("zhang.h", rawJsonData);
 				ResInfo info = JsonUtil.getResInfo(rawJsonData, 1);
 				ArrayList<SYGP> data = info.getSygps();
-				Log.d("zhang.h", "data size=" + data.size());
 				// 给数据集设置X轴时间值
 				setData2(data);
 				handler.sendEmptyMessage(0);
@@ -168,7 +167,7 @@ public class MinuteFragment extends BaseFragment {
 		ArrayList<Entry> vals1 = new ArrayList<Entry>();
 		// 倒叙排列
 		for (int i = data.size() - 1; i >= 0; i--) {
-			xVals.add(TimeUtils.formatTime(data.get(i).getXVALUE(),"HH:mm"));
+			xVals.add(TimeUtils.formatTime(data.get(i).getXVALUE(), "HH:mm"));
 			// y轴数据 x坐标点位
 			vals1.add(new Entry(Float.parseFloat(data.get(i).getYVALUE()), data.size() - i - 1));
 		}

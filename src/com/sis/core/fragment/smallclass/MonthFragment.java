@@ -1,10 +1,16 @@
 package com.sis.core.fragment.smallclass;
 
 import java.util.ArrayList;
+import java.util.Date;
+
+import org.apache.http.Header;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,15 +24,23 @@ import com.github.mikephil.charting.utils.LargeValueFormatter;
 import com.github.mikephil.charting.utils.XLabels;
 import com.github.mikephil.charting.utils.XLabels.XLabelPosition;
 import com.github.mikephil.charting.utils.YLabels;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.sis.core.Constant;
 import com.sis.core.R;
+import com.sis.core.entity.MonthObj;
+import com.sis.core.entity.MonthParam;
+import com.sis.core.entity.ResInfo;
 import com.sis.core.enums.FragmentType;
 import com.sis.core.fragment.base.BaseFragment;
+import com.sis.core.net.SISHttpClient;
+import com.sis.core.utils.JsonUtil;
+import com.sis.core.utils.TimeUtils;
 
 public class MonthFragment extends BaseFragment {
 
 	protected FragmentType fragmentType;
 	protected int currColor;
-	
+
 	private BarChart monthChart;
 
 	public static MonthFragment newInstance(FragmentType fragmentType) {
@@ -58,7 +72,7 @@ public class MonthFragment extends BaseFragment {
 			break;
 		}
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View monthLayout = inflater.inflate(R.layout.fragment_month, container, false);
@@ -97,14 +111,76 @@ public class MonthFragment extends BaseFragment {
 		yl.setTypeface(Typeface.DEFAULT_BOLD);
 
 		// add data
-		setData(7);
+		// setData(7);
 
 		monthChart.animateXY(2000, 2000);
 
 		// dont forget to refresh the drawing
-		monthChart.invalidate();
+		// monthChart.invalidate();
+
+		getServerData();
 
 		return monthLayout;
+	}
+
+	private void getServerData() {
+		Date now = new Date();
+		String time = TimeUtils.getMonthTime(now);
+		String url = Constant.MONTH_URL + "?time=" + time + "&type=" + "SYGP:01.SC0001";
+		Log.d("zhang.h", url);
+		SISHttpClient.get(url, new BaseJsonHttpResponseHandler<ResInfo>() {
+
+			@Override
+			public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, ResInfo errorResponse) {
+
+			}
+
+			@Override
+			public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, ResInfo resInfo) {
+
+			}
+
+			@Override
+			protected ResInfo parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+				MonthObj info = JsonUtil.getMonthResInfo(rawJsonData);
+				ArrayList<MonthParam> datas = info.getDatas();
+				// 给数据集设置X轴时间值
+				setData2(datas);
+				handler.sendEmptyMessage(0);
+				return null;
+			}
+		});
+	}
+
+	Handler handler = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			monthChart.invalidate();
+		}
+	};
+
+	public void setData2(ArrayList<MonthParam> data) {
+		ArrayList<String> xVals = new ArrayList<String>();
+		ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
+		for (int i = data.size() - 1; i >= 0; i--) {
+			xVals.add(data.get(i).getDate());
+			// y轴数据 x坐标点位
+			yVals1.add(new BarEntry(Math.round(Double.valueOf(data.get(i).getValue())), data.size() - i - 1));
+		}
+
+		BarDataSet set1 = new BarDataSet(yVals1, "");
+		set1.setColor(currColor);
+
+		ArrayList<BarDataSet> dataSets = new ArrayList<BarDataSet>();
+		dataSets.add(set1);
+
+		BarData barData = new BarData(xVals, dataSets);
+
+		// add space between the dataset groups in percent of bar-width
+		barData.setGroupSpace(110f);
+		monthChart.setData(barData);
 	}
 
 	public void setData(int count) {

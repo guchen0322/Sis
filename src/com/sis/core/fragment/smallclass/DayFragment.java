@@ -22,6 +22,7 @@ import com.github.mikephil.charting.utils.XLabels;
 import com.github.mikephil.charting.utils.XLabels.XLabelPosition;
 import com.github.mikephil.charting.utils.YLabels;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.sis.core.Constant;
 import com.sis.core.R;
 import com.sis.core.entity.ResInfo;
 import com.sis.core.entity.SYGP;
@@ -131,7 +132,7 @@ public class DayFragment extends BaseFragment {
 	private void getServerData() {
 		String start = TimeUtils.getStartTime(60);
 		String end = TimeUtils.getEndTime(60);
-		String url = "http://oa.sygpp.com:8091/home/getdatabyday?starttime=" + start + "&endtime=" + end + "&type=01";
+		String url = Constant.DAY_URL + "?starttime=" + start + "&endtime=" + end + "&type=01";
 		Log.d("zhang.h", url);
 		SISHttpClient.get(url, new BaseJsonHttpResponseHandler<ResInfo>() {
 
@@ -147,10 +148,8 @@ public class DayFragment extends BaseFragment {
 
 			@Override
 			protected ResInfo parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-				Log.d("zhang.h", rawJsonData);
 				ResInfo info = JsonUtil.getResInfo(rawJsonData, 1);
 				ArrayList<SYGP> data = info.getSygps();
-				Log.d("zhang.h", "data size=" + data.size());
 				// 给数据集设置X轴时间值
 				setData2(data);
 				handler.sendEmptyMessage(0);
@@ -180,11 +179,11 @@ public class DayFragment extends BaseFragment {
 
 		// create a dataset and give it a type
 		LineDataSet set1 = new LineDataSet(vals1, "");
-		set1.setDrawFilled(true);
-		set1.setDrawCircles(false);
-		set1.setFillAlpha(255);
-		set1.setFillColor(currColor);
 		set1.setColor(currColor);
+		set1.setCircleColor(currColor);
+		set1.setLineWidth(1.5f);
+		set1.setFillAlpha(65);
+		set1.setFillColor(currColor);
 
 		ArrayList<LineDataSet> dataSets = new ArrayList<LineDataSet>();
 		dataSets.add(set1);

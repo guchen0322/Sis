@@ -20,12 +20,12 @@ import com.github.mikephil.charting.charts.BarLineChartBase.BorderPosition;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.utils.LargeValueFormatter;
 import com.github.mikephil.charting.utils.XLabels;
 import com.github.mikephil.charting.utils.XLabels.XLabelPosition;
 import com.github.mikephil.charting.utils.YLabels;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.sis.core.Constant;
 import com.sis.core.R;
 import com.sis.core.entity.ResInfo;
 import com.sis.core.entity.SYGP;
@@ -39,7 +39,7 @@ public class WeekFragment extends BaseFragment {
 
 	protected FragmentType fragmentType;
 	protected int currColor;
-	
+
 	private BarChart weekChart;
 
 	public static WeekFragment newInstance(FragmentType fragmentType) {
@@ -49,7 +49,7 @@ public class WeekFragment extends BaseFragment {
 		fragment.setArguments(args);
 		return fragment;
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -111,30 +111,30 @@ public class WeekFragment extends BaseFragment {
 		yl.setTypeface(Typeface.DEFAULT_BOLD);
 
 		// add data
-		//setData(7);
+		// setData(7);
 
 		weekChart.animateXY(2000, 2000);
 
 		// dont forget to refresh the drawing
-		//weekChart.invalidate();
-		
+		// weekChart.invalidate();
+
 		getServerData();
 
 		return weekLayout;
 	}
-	
+
 	private void getServerData() {
 		Date now = new Date();
-		String start = TimeUtils.getWeekStartTime(now);
-		String end = TimeUtils.getWeekEndime(now);
-		String url = "http://oa.sygpp.com:8091/home/getdatabyweek?starttime=" + start + "&endtime=" + end + "&type=01";
+		String startTime = TimeUtils.getWeekEndTime(now);
+		String endTime = TimeUtils.getWeekStartTime(now);
+		String url = Constant.WEEK_URL + "?starttime=" + startTime + "&endtime=" + endTime + "&type=01";
 		Log.d("zhang.h", url);
 		SISHttpClient.get(url, new BaseJsonHttpResponseHandler<ResInfo>() {
 
 			@Override
 			public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, ResInfo errorResponse) {
 
-			} 
+			}
 
 			@Override
 			public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, ResInfo resInfo) {
@@ -161,22 +161,22 @@ public class WeekFragment extends BaseFragment {
 			weekChart.invalidate();
 		}
 	};
-	
+
 	public void setData2(ArrayList<SYGP> data) {
 		ArrayList<String> xVals = new ArrayList<String>();
 		ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
 		for (int i = data.size() - 1; i >= 0; i--) {
-			xVals.add(TimeUtils.formatTime(data.get(i).getXVALUE(),"MM/dd"));
+			xVals.add(TimeUtils.formatTime(data.get(i).getXVALUE(), "MM/dd"));
 			// y轴数据 x坐标点位
-			yVals1.add(new BarEntry(Float.parseFloat(data.get(i).getYVALUE()), data.size() - i - 1));
+			yVals1.add(new BarEntry(Math.round(Double.valueOf(data.get(i).getYVALUE())), data.size() - i - 1));
 		}
-		
+
 		BarDataSet set1 = new BarDataSet(yVals1, "");
 		set1.setColor(currColor);
-		
+
 		ArrayList<BarDataSet> dataSets = new ArrayList<BarDataSet>();
 		dataSets.add(set1);
-		
+
 		BarData barData = new BarData(xVals, dataSets);
 
 		// add space between the dataset groups in percent of bar-width
