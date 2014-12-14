@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 
+import com.sis.core.listener.DataCallBackListener;
 import com.sis.core.utils.ScreenUtils;
 
 public class BaseFragment extends Fragment {
@@ -43,5 +44,11 @@ public class BaseFragment extends Fragment {
 	public void forwardActivity(Class<?> cls) {
 		Intent intent = new Intent(mActivity, cls);
 		startActivity(intent);
+	}
+
+	protected DataCallBackListener mCallBackListener;
+
+	public void setDataCallBackListener(DataCallBackListener listenter) {
+		this.mCallBackListener = listenter;
 	}
 }

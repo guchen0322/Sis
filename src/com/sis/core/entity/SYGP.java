@@ -1,9 +1,25 @@
 package com.sis.core.entity;
 
 public class SYGP {
+	private String Value;
+	private String Date;
 	private String PARAID;
-	private String YVALUE;
-	private String XVALUE;
+
+	public String getValue() {
+		return Value;
+	}
+
+	public void setValue(String value) {
+		Value = value;
+	}
+
+	public String getDate() {
+		return Date;
+	}
+
+	public void setDate(String date) {
+		Date = date;
+	}
 
 	public String getPARAID() {
 		return PARAID;
@@ -11,22 +27,6 @@ public class SYGP {
 
 	public void setPARAID(String pARAID) {
 		PARAID = pARAID;
-	}
-
-	public String getYVALUE() {
-		return YVALUE;
-	}
-
-	public void setYVALUE(String vALUE) {
-		YVALUE = vALUE;
-	}
-
-	public String getXVALUE() {
-		return XVALUE;
-	}
-
-	public void setXVALUE(String xVALUE) {
-		XVALUE = xVALUE;
 	}
 
 }

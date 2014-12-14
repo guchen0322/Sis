@@ -2,11 +2,15 @@ package com.sis.core.fragment.smallclass;
 
 import java.util.ArrayList;
 
+import org.apache.http.Header;
+
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
@@ -14,16 +18,20 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.utils.Legend;
 import com.github.mikephil.charting.utils.Legend.LegendPosition;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.sis.core.Constant;
 import com.sis.core.R;
+import com.sis.core.entity.ResInfo;
+import com.sis.core.entity.SYGP;
 import com.sis.core.enums.FragmentType;
-import com.sis.core.fragment.base.BaseFragment;
+import com.sis.core.fragment.base.BaseDataFragment;
+import com.sis.core.net.SISHttpClient;
+import com.sis.core.utils.JsonUtil;
 
-public class SeasonFragment extends BaseFragment {
+public class SeasonFragment extends BaseDataFragment {
 
 	protected FragmentType fragmentType;
 	protected int currColor;
-	
-	private String[] mParties = new String[] { "07月", "08月", "09月" };
 	private ArrayList<String> legends;
 
 	private PieChart seasonChart;
@@ -35,7 +43,7 @@ public class SeasonFragment extends BaseFragment {
 		fragment.setArguments(args);
 		return fragment;
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -84,52 +92,79 @@ public class SeasonFragment extends BaseFragment {
 		// display percentage values
 		seasonChart.setUsePercentValues(false);
 
-		setData(3, 100);
-
-		seasonChart.animateXY(1500, 1500);
-
-		Legend l = seasonChart.getLegend();
-		l.setPosition(LegendPosition.RIGHT_OF_CHART);
-		l.setXEntrySpace(7f);
-		l.setYEntrySpace(10f);
-		l.setTextSize(12.0f);
-		
 		return seasonLayout;
 	}
 
-	private void setData(int count, float range) {
-		legends = new ArrayList<String>();
-		legends.add("上季度04月  354.98MW");
-		legends.add("上季度05月  354.98MW");
-		legends.add("上季度06月  354.98MW");
+	private void getServerData() {
+		String url = Constant.QUARTER_URL + "?type=SYGP:01.SC0001";
+		Log.d("zhang.h", url);
+		SISHttpClient.get(url, new BaseJsonHttpResponseHandler<ResInfo>() {
 
-		float mult = range;
-		ArrayList<Entry> yVals1 = new ArrayList<Entry>();
-		for (int i = 0; i < count; i++) {
-			yVals1.add(new Entry((float) (Math.random() * mult) + mult / 5, i));
+			@Override
+			public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, ResInfo errorResponse) {
+
+			}
+
+			@Override
+			public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, ResInfo resInfo) {
+				if (resInfo != null) {
+					setData(resInfo);
+				}
+			}
+
+			@Override
+			protected ResInfo parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+				return JsonUtil.getResInfo(rawJsonData);
+			}
+		});
+	}
+
+	private void setData(ResInfo info) {
+		mCallBackListener.dataCallBack(info);
+
+		ArrayList<SYGP> sygps = info.getSygps();
+		ArrayList<String> xVals = new ArrayList<String>();
+		ArrayList<Entry> yVals = new ArrayList<Entry>();
+		for (int i = 0; i < sygps.size(); i++) {
+			SYGP sygp = sygps.get(i);
+			xVals.add(sygp.getDate());
+			yVals.add(new Entry(Math.round(Double.valueOf(sygp.getValue())), i));
 		}
 
-		ArrayList<String> xVals = new ArrayList<String>();
-		for (int i = 0; i < count; i++)
-			xVals.add(mParties[i % mParties.length]);
+		ArrayList<SYGP> dbsygps = info.getDbsygps();
+		legends = new ArrayList<String>();
+		for (int i = 0; i < dbsygps.size(); i++) {
+			SYGP dbsygp = dbsygps.get(i);
+			legends.add(dbsygp.getDate() + "  " + dbsygp.getValue() + "MW");
+		}
 
-		PieDataSet set1 = new PieDataSet(yVals1, "");
-		set1.setSliceSpace(3f);
+		PieDataSet set = new PieDataSet(yVals, "");
+		set.setSliceSpace(3f);
 
 		// add a lot of colors
 		ArrayList<Integer> colors = new ArrayList<Integer>();
 		colors.add(Color.rgb(0, 188, 13));
 		colors.add(Color.rgb(248, 181, 48));
 		colors.add(Color.rgb(231, 84, 29));
-		set1.setColors(colors);
+		set.setColors(colors);
 
-		PieData data = new PieData(xVals, set1);
+		PieData data = new PieData(xVals, set);
 		data.setmLegendVals(legends);
 		seasonChart.setData(data);
 
-		// undo all highlights
-		seasonChart.highlightValues(null);
+		Legend l = seasonChart.getLegend();
+		l.setPosition(LegendPosition.RIGHT_OF_CHART);
+		l.setXEntrySpace(7f);
+		l.setYEntrySpace(10f);
+		l.setTextSize(12.0f);
 
+		seasonChart.animateXY(1500, 1500);
 		seasonChart.invalidate();
+	}
+
+	@Override
+	public void fetchObjectData() {
+		Toast.makeText(mActivity, "Season", Toast.LENGTH_SHORT).show();
+		getServerData();
 	}
 }

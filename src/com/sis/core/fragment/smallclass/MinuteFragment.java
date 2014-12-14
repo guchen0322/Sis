@@ -6,12 +6,11 @@ import org.apache.http.Header;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
@@ -26,12 +25,11 @@ import com.sis.core.R;
 import com.sis.core.entity.ResInfo;
 import com.sis.core.entity.SYGP;
 import com.sis.core.enums.FragmentType;
-import com.sis.core.fragment.base.BaseFragment;
+import com.sis.core.fragment.base.BaseDataFragment;
 import com.sis.core.net.SISHttpClient;
 import com.sis.core.utils.JsonUtil;
-import com.sis.core.utils.TimeUtils;
 
-public class MinuteFragment extends BaseFragment {
+public class MinuteFragment extends BaseDataFragment {
 
 	protected FragmentType fragmentType;
 	protected int currColor;
@@ -113,21 +111,11 @@ public class MinuteFragment extends BaseFragment {
 		y.setTextColor(currColor);
 		y.setTypeface(Typeface.DEFAULT_BOLD);
 
-		minuteChart.animateXY(2000, 2000);
-		// add data
-		// setData(10, 100);
-		// dont forget to refresh the drawing minuteChart.invalidate();
-
-		// get data from server
-		getServerData();
-
 		return minuteLayout;
 	}
 
 	private void getServerData() {
-		String start = TimeUtils.getStartTime(5);
-		String end = TimeUtils.getEndTime(5);
-		String url = Constant.MIN_URL + "?starttime=" + start + "&endtime=" + end + "&type=01";
+		String url = Constant.MIN_URL + "?type=SYGP:01.SC0001";
 		Log.d("zhang.h", url);
 		SISHttpClient.get(url, new BaseJsonHttpResponseHandler<ResInfo>() {
 
@@ -138,38 +126,29 @@ public class MinuteFragment extends BaseFragment {
 
 			@Override
 			public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, ResInfo resInfo) {
-
+				if (resInfo != null) {
+					setData(resInfo);
+				}
 			}
 
 			@Override
 			protected ResInfo parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-				ResInfo info = JsonUtil.getResInfo(rawJsonData, 1);
-				ArrayList<SYGP> data = info.getSygps();
-				// 给数据集设置X轴时间值
-				setData2(data);
-				handler.sendEmptyMessage(0);
-				return null;
+				return JsonUtil.getResInfo(rawJsonData);
 			}
 		});
 	}
 
-	Handler handler = new Handler() {
+	private void setData(ResInfo info) {
+		mCallBackListener.dataCallBack(info);
 
-		@Override
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
-			minuteChart.invalidate();
-		}
-	};
-
-	private void setData2(ArrayList<SYGP> data) {
+		ArrayList<SYGP> data = info.getSygps();
 		ArrayList<String> xVals = new ArrayList<String>();
 		ArrayList<Entry> vals1 = new ArrayList<Entry>();
 		// 倒叙排列
 		for (int i = data.size() - 1; i >= 0; i--) {
-			xVals.add(TimeUtils.formatTime(data.get(i).getXVALUE(), "HH:mm"));
+			xVals.add(data.get(i).getDate());
 			// y轴数据 x坐标点位
-			vals1.add(new Entry(Float.parseFloat(data.get(i).getYVALUE()), data.size() - i - 1));
+			vals1.add(new Entry(Float.parseFloat(data.get(i).getValue()), data.size() - i - 1));
 		}
 
 		// create a dataset and give it a type
@@ -188,6 +167,15 @@ public class MinuteFragment extends BaseFragment {
 
 		// set data
 		minuteChart.setData(lineData);
+
+		minuteChart.animateXY(2000, 2000);
+		minuteChart.invalidate();
+	}
+
+	@Override
+	public void fetchObjectData() {
+		Toast.makeText(mActivity, "Minute", Toast.LENGTH_SHORT).show();
+		getServerData();
 	}
 
 }

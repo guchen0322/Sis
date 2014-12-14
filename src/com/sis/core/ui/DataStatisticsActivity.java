@@ -8,31 +8,28 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sis.core.R;
+import com.sis.core.entity.ResInfo;
 import com.sis.core.enums.FragmentType;
 import com.sis.core.fragment.BigClassFragment;
 import com.sis.core.listener.CyclePageChangeListener;
+import com.sis.core.listener.DataCallBackListener;
 import com.sis.core.ui.base.BaseFragmentActivity;
 import com.sis.core.utils.ScreenUtils;
-import com.sis.core.widget.switchView.SwitchButton;
 
-public class DataStatisticsActivity extends BaseFragmentActivity implements OnClickListener, CyclePageChangeListener {
+public class DataStatisticsActivity extends BaseFragmentActivity implements OnClickListener, CyclePageChangeListener, DataCallBackListener {
 
 	private FragmentManager fragmentManager;
 
 	private RelativeLayout titleRL;
 	private ImageView backIV;
 	private LinearLayout jizuSwitchLL;
-	private SwitchButton dataCompareSB;
 	private TextView titleTV, descTV, oneTV, unitTV, twoTV, thirdTV;
 	private RelativeLayout thirdDataRL;
 
@@ -73,14 +70,6 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 		thirdTV = (TextView) findViewById(R.id.thirdTV);
 
 		thirdDataRL = (RelativeLayout) findViewById(R.id.thirdDataRL);
-		dataCompareSB = (SwitchButton) findViewById(R.id.dataCompareSB);
-		dataCompareSB.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				Toast.makeText(DataStatisticsActivity.this, String.valueOf(isChecked), Toast.LENGTH_SHORT).show();
-			}
-		});
 
 		jzfhTabIV = (ImageView) findViewById(R.id.jzfhTabIV);
 		fdlTabIV = (ImageView) findViewById(R.id.fdlTabIV);
@@ -136,6 +125,7 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 		}
 
 		fragment.setCyclePageChangeListener(this);
+		fragment.setDataCallBackListener(this);
 		transaction.replace(R.id.content, fragment);
 		transaction.commit();
 	}
@@ -245,6 +235,19 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 			thirdDataRL.setVisibility(View.GONE);
 			break;
 		}
+	}
+
+	@Override
+	public void dataCallBack(final ResInfo resInfo) {
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				oneTV.setText(String.format("%.2f", Double.valueOf(resInfo.getValue())));
+				twoTV.setText(String.format("%.2f", Double.valueOf(resInfo.getDifference())));
+				thirdTV.setText(String.format("%.2f", Double.valueOf(resInfo.getPercentage())) + "%");
+			}
+		});
 	}
 
 }

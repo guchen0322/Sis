@@ -30,7 +30,7 @@ public class TimeUtils {
 	public static String formatTime(String time, String pattern) {
 		String strDate = null;
 		try {
-			Date date = new SimpleDateFormat("yyy-MM-dd HH:mm:ss", Locale.CHINA).parse(time);
+			Date date = new SimpleDateFormat("yyy-MM-dd", Locale.CHINA).parse(time);
 			strDate = new SimpleDateFormat(pattern, Locale.CHINA).format(date);
 		} catch (ParseException e) {
 			e.printStackTrace();

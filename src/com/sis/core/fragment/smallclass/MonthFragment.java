@@ -1,19 +1,19 @@
 package com.sis.core.fragment.smallclass;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import org.apache.http.Header;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.BarLineChartBase.BorderPosition;
@@ -27,21 +27,26 @@ import com.github.mikephil.charting.utils.YLabels;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.sis.core.Constant;
 import com.sis.core.R;
-import com.sis.core.entity.MonthObj;
-import com.sis.core.entity.MonthParam;
 import com.sis.core.entity.ResInfo;
+import com.sis.core.entity.SYGP;
 import com.sis.core.enums.FragmentType;
-import com.sis.core.fragment.base.BaseFragment;
+import com.sis.core.fragment.base.BaseDataFragment;
 import com.sis.core.net.SISHttpClient;
 import com.sis.core.utils.JsonUtil;
-import com.sis.core.utils.TimeUtils;
+import com.sis.core.widget.switchView.SwitchButton;
 
-public class MonthFragment extends BaseFragment {
+public class MonthFragment extends BaseDataFragment {
 
 	protected FragmentType fragmentType;
 	protected int currColor;
 
 	private BarChart monthChart;
+	private ArrayList<String> xVals;
+	private ArrayList<BarDataSet> dataSets;
+	private BarDataSet set1;
+	private BarDataSet set2;
+
+	private SwitchButton monthSB;
 
 	public static MonthFragment newInstance(FragmentType fragmentType) {
 		MonthFragment fragment = new MonthFragment();
@@ -76,6 +81,20 @@ public class MonthFragment extends BaseFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View monthLayout = inflater.inflate(R.layout.fragment_month, container, false);
+
+		monthSB = (SwitchButton) mActivity.findViewById(R.id.dataCompareSB);
+		monthSB.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if (isChecked) {
+					setSwitchData(true);
+				} else {
+					setSwitchData(false);
+				}
+			}
+		});
+
 		monthChart = (BarChart) monthLayout.findViewById(R.id.monthChart);
 
 		// disable the drawing of values
@@ -110,23 +129,11 @@ public class MonthFragment extends BaseFragment {
 		yl.setTextColor(currColor);
 		yl.setTypeface(Typeface.DEFAULT_BOLD);
 
-		// add data
-		// setData(7);
-
-		monthChart.animateXY(2000, 2000);
-
-		// dont forget to refresh the drawing
-		// monthChart.invalidate();
-
-		getServerData();
-
 		return monthLayout;
 	}
 
 	private void getServerData() {
-		Date now = new Date();
-		String time = TimeUtils.getMonthTime(now);
-		String url = Constant.MONTH_URL + "?time=" + time + "&type=" + "SYGP:01.SC0001";
+		String url = Constant.MONTH_URL + "?type=SYGP:01.SC0001";
 		Log.d("zhang.h", url);
 		SISHttpClient.get(url, new BaseJsonHttpResponseHandler<ResInfo>() {
 
@@ -137,87 +144,65 @@ public class MonthFragment extends BaseFragment {
 
 			@Override
 			public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, ResInfo resInfo) {
-
+				if (resInfo != null) {
+					setData(resInfo);
+				}
 			}
 
 			@Override
 			protected ResInfo parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-				MonthObj info = JsonUtil.getMonthResInfo(rawJsonData);
-				ArrayList<MonthParam> datas = info.getDatas();
-				// 给数据集设置X轴时间值
-				setData2(datas);
-				handler.sendEmptyMessage(0);
-				return null;
+				return JsonUtil.getResInfo(rawJsonData);
 			}
 		});
 	}
 
-	Handler handler = new Handler() {
+	public void setData(ResInfo info) {
+		mCallBackListener.dataCallBack(info);
 
-		@Override
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
-			monthChart.invalidate();
-		}
-	};
-
-	public void setData2(ArrayList<MonthParam> data) {
-		ArrayList<String> xVals = new ArrayList<String>();
+		ArrayList<SYGP> sygps = info.getSygps();
+		xVals = new ArrayList<String>();
 		ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
-		for (int i = data.size() - 1; i >= 0; i--) {
-			xVals.add(data.get(i).getDate());
-			// y轴数据 x坐标点位
-			yVals1.add(new BarEntry(Math.round(Double.valueOf(data.get(i).getValue())), data.size() - i - 1));
+		for (int i = sygps.size() - 1; i >= 0; i--) {
+			xVals.add(sygps.get(i).getDate());
+			yVals1.add(new BarEntry(Math.round(Double.valueOf(sygps.get(i).getValue())), sygps.size() - i - 1));
 		}
 
-		BarDataSet set1 = new BarDataSet(yVals1, "");
+		ArrayList<SYGP> dbsygps = info.getDbsygps();
+		ArrayList<BarEntry> yVals2 = new ArrayList<BarEntry>();
+		for (int i = dbsygps.size() - 1; i >= 0; i--) {
+			yVals2.add(new BarEntry(Math.round(Double.valueOf(dbsygps.get(i).getValue())), dbsygps.size() - i - 1));
+		}
+
+		set1 = new BarDataSet(yVals1, "");
 		set1.setColor(currColor);
+		set2 = new BarDataSet(yVals2, "");
+		set2.setColor(Color.rgb(255, 0, 0));
 
-		ArrayList<BarDataSet> dataSets = new ArrayList<BarDataSet>();
+		dataSets = new ArrayList<BarDataSet>();
+
+		// 默认一组
+		setSwitchData(monthSB.isChecked());
+	}
+
+	private void setSwitchData(boolean isCompare) {
+		dataSets.clear();
 		dataSets.add(set1);
-
+		if (isCompare)
+			dataSets.add(set2);
 		BarData barData = new BarData(xVals, dataSets);
 
 		// add space between the dataset groups in percent of bar-width
 		barData.setGroupSpace(110f);
 		monthChart.setData(barData);
+
+		monthChart.animateXY(2000, 2000);
+		monthChart.invalidate();
 	}
 
-	public void setData(int count) {
-		ArrayList<String> xVals = new ArrayList<String>();
-		for (int i = 0; i < count; i++) {
-			xVals.add((i + 1990) + "");
-		}
-
-		ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
-		ArrayList<BarEntry> yVals2 = new ArrayList<BarEntry>();
-
-		float mult = 1000;
-		for (int i = 0; i < count; i++) {
-			float val = (float) (Math.random() * mult) + 3;
-			yVals1.add(new BarEntry(val, i));
-		}
-
-		for (int i = 0; i < count; i++) {
-			float val = (float) (Math.random() * mult) + 3;
-			yVals2.add(new BarEntry(val, i));
-		}
-
-		BarDataSet set1 = new BarDataSet(yVals1, "");
-		set1.setColor(currColor);
-		BarDataSet set2 = new BarDataSet(yVals2, "");
-		set2.setColor(Color.rgb(255, 0, 0));
-
-		ArrayList<BarDataSet> dataSets = new ArrayList<BarDataSet>();
-		dataSets.add(set1);
-		dataSets.add(set2);
-
-		BarData data = new BarData(xVals, dataSets);
-
-		// add space between the dataset groups in percent of bar-width
-		data.setGroupSpace(110f);
-
-		monthChart.setData(data);
+	@Override
+	public void fetchObjectData() {
+		Toast.makeText(mActivity, "Month", Toast.LENGTH_SHORT).show();
+		getServerData();
 	}
 
 }

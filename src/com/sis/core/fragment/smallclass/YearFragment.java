@@ -2,11 +2,15 @@ package com.sis.core.fragment.smallclass;
 
 import java.util.ArrayList;
 
+import org.apache.http.Header;
+
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
@@ -14,16 +18,20 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.utils.Legend;
 import com.github.mikephil.charting.utils.Legend.LegendPosition;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.sis.core.Constant;
 import com.sis.core.R;
+import com.sis.core.entity.ResInfo;
+import com.sis.core.entity.SYGP;
 import com.sis.core.enums.FragmentType;
-import com.sis.core.fragment.base.BaseFragment;
+import com.sis.core.fragment.base.BaseDataFragment;
+import com.sis.core.net.SISHttpClient;
+import com.sis.core.utils.JsonUtil;
 
-public class YearFragment extends BaseFragment {
-	
+public class YearFragment extends BaseDataFragment {
+
 	protected FragmentType fragmentType;
 	protected int currColor;
-	
-	protected String[] mParties = new String[] { "Q1季度", "Q2季度", "Q3季度", "Q4季度" };
 	private ArrayList<String> legends;
 
 	private PieChart yearChart;
@@ -84,35 +92,51 @@ public class YearFragment extends BaseFragment {
 		// display percentage values
 		yearChart.setUsePercentValues(false);
 
-		setData(4, 100);
-
-		yearChart.animateXY(1500, 1500);
-
-		Legend l = yearChart.getLegend();
-		l.setPosition(LegendPosition.RIGHT_OF_CHART);
-		l.setXEntrySpace(7f);
-		l.setYEntrySpace(10f);
-		l.setTextSize(12.0f);
-
 		return yearLayout;
 	}
 
-	private void setData(int count, float range) {
-		legends = new ArrayList<String>();
-		legends.add("去年Q1 354.98MW");
-		legends.add("去年Q2 354.98MW");
-		legends.add("去年Q3 354.98MW");
-		legends.add("去年Q4 354.98MW");
+	private void getServerData() {
+		String url = Constant.YEAR_URL + "?type=SYGP:01.SC0001";
+		Log.d("zhang.h", url);
+		SISHttpClient.get(url, new BaseJsonHttpResponseHandler<ResInfo>() {
 
-		float mult = range;
+			@Override
+			public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, ResInfo errorResponse) {
+
+			}
+
+			@Override
+			public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, ResInfo resInfo) {
+				if (resInfo != null) {
+					setData(resInfo);
+				}
+			}
+
+			@Override
+			protected ResInfo parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+				return JsonUtil.getResInfo(rawJsonData);
+			}
+		});
+	}
+
+	private void setData(ResInfo info) {
+		mCallBackListener.dataCallBack(info);
+
+		ArrayList<SYGP> sygps = info.getSygps();
+		ArrayList<String> xVals = new ArrayList<String>();
 		ArrayList<Entry> yVals = new ArrayList<Entry>();
-		for (int i = 0; i < count; i++) {
-			yVals.add(new Entry((float) (Math.random() * mult) + mult / 5, i));
+		for (int i = 0; i < sygps.size(); i++) {
+			SYGP sygp = sygps.get(i);
+			xVals.add(sygp.getDate());
+			yVals.add(new Entry(Math.round(Double.valueOf(sygp.getValue())), i));
 		}
 
-		ArrayList<String> xVals = new ArrayList<String>();
-		for (int i = 0; i < count; i++)
-			xVals.add(mParties[i % mParties.length]);
+		ArrayList<SYGP> dbsygps = info.getDbsygps();
+		legends = new ArrayList<String>();
+		for (int i = 0; i < dbsygps.size(); i++) {
+			SYGP dbsygp = dbsygps.get(i);
+			legends.add(dbsygp.getDate() + "  " + dbsygp.getValue() + "MW");
+		}
 
 		PieDataSet ySet = new PieDataSet(yVals, "");
 		ySet.setSliceSpace(3f);
@@ -129,10 +153,20 @@ public class YearFragment extends BaseFragment {
 		data.setmLegendVals(legends);
 		yearChart.setData(data);
 
-		// undo all highlights
-		yearChart.highlightValues(null);
+		Legend l = yearChart.getLegend();
+		l.setPosition(LegendPosition.RIGHT_OF_CHART);
+		l.setXEntrySpace(7f);
+		l.setYEntrySpace(10f);
+		l.setTextSize(12.0f);
 
+		yearChart.animateXY(1500, 1500);
 		yearChart.invalidate();
+	}
+
+	@Override
+	public void fetchObjectData() {
+		Toast.makeText(mActivity, "Year", Toast.LENGTH_SHORT).show();
+		getServerData();
 	}
 
 }

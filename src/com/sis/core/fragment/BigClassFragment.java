@@ -49,9 +49,10 @@ public class BigClassFragment extends BaseFragment implements OnPageChangeListen
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View bigClassLayout = inflater.inflate(R.layout.fragment_big_class, container, false);
 
-		CyclePagerAdapter adapter = new CyclePagerAdapter(getFragmentManager(), fragmentType);
+		CyclePagerAdapter adapter = new CyclePagerAdapter(getFragmentManager(), fragmentType, mCallBackListener);
 		mViewPager = (ViewPager) bigClassLayout.findViewById(R.id.pager);
 		mViewPager.setAdapter(adapter);
+		mViewPager.setOffscreenPageLimit(0);
 		mViewPager.setOnPageChangeListener(this);
 
 		indicatorHSV = (HorizontalScrollView) bigClassLayout.findViewById(R.id.indicatorHSV);

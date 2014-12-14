@@ -1,19 +1,19 @@
 package com.sis.core.fragment.smallclass;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import org.apache.http.Header;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.BarLineChartBase.BorderPosition;
@@ -30,17 +30,24 @@ import com.sis.core.R;
 import com.sis.core.entity.ResInfo;
 import com.sis.core.entity.SYGP;
 import com.sis.core.enums.FragmentType;
-import com.sis.core.fragment.base.BaseFragment;
+import com.sis.core.fragment.base.BaseDataFragment;
 import com.sis.core.net.SISHttpClient;
 import com.sis.core.utils.JsonUtil;
 import com.sis.core.utils.TimeUtils;
+import com.sis.core.widget.switchView.SwitchButton;
 
-public class WeekFragment extends BaseFragment {
+public class WeekFragment extends BaseDataFragment {
 
 	protected FragmentType fragmentType;
 	protected int currColor;
 
 	private BarChart weekChart;
+	private ArrayList<String> xVals;
+	private ArrayList<BarDataSet> dataSets;
+	private BarDataSet set1;
+	private BarDataSet set2;
+
+	private SwitchButton weekSB;
 
 	public static WeekFragment newInstance(FragmentType fragmentType) {
 		WeekFragment fragment = new WeekFragment();
@@ -76,6 +83,19 @@ public class WeekFragment extends BaseFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View weekLayout = inflater.inflate(R.layout.fragment_week, container, false);
 
+		weekSB = (SwitchButton) mActivity.findViewById(R.id.dataCompareSB);
+		weekSB.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if (isChecked) {
+					setSwitchData(true);
+				} else {
+					setSwitchData(false);
+				}
+			}
+		});
+
 		weekChart = (BarChart) weekLayout.findViewById(R.id.weekChart);
 
 		// disable the drawing of values
@@ -110,24 +130,11 @@ public class WeekFragment extends BaseFragment {
 		yl.setTextColor(currColor);
 		yl.setTypeface(Typeface.DEFAULT_BOLD);
 
-		// add data
-		// setData(7);
-
-		weekChart.animateXY(2000, 2000);
-
-		// dont forget to refresh the drawing
-		// weekChart.invalidate();
-
-		getServerData();
-
 		return weekLayout;
 	}
 
 	private void getServerData() {
-		Date now = new Date();
-		String startTime = TimeUtils.getWeekEndTime(now);
-		String endTime = TimeUtils.getWeekStartTime(now);
-		String url = Constant.WEEK_URL + "?starttime=" + startTime + "&endtime=" + endTime + "&type=01";
+		String url = Constant.WEEK_URL + "?type=SYGP:01.SC0001";
 		Log.d("zhang.h", url);
 		SISHttpClient.get(url, new BaseJsonHttpResponseHandler<ResInfo>() {
 
@@ -138,88 +145,65 @@ public class WeekFragment extends BaseFragment {
 
 			@Override
 			public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, ResInfo resInfo) {
-
+				if (resInfo != null) {
+					setData(resInfo);
+				}
 			}
 
 			@Override
 			protected ResInfo parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-				ResInfo info = JsonUtil.getResInfo(rawJsonData, 1);
-				ArrayList<SYGP> data = info.getSygps();
-				// 给数据集设置X轴时间值
-				setData2(data);
-				handler.sendEmptyMessage(0);
-				return null;
+				return JsonUtil.getResInfo(rawJsonData);
 			}
 		});
 	}
 
-	Handler handler = new Handler() {
+	public void setData(ResInfo info) {
+		mCallBackListener.dataCallBack(info);
 
-		@Override
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
-			weekChart.invalidate();
-		}
-	};
-
-	public void setData2(ArrayList<SYGP> data) {
-		ArrayList<String> xVals = new ArrayList<String>();
+		ArrayList<SYGP> sygps = info.getSygps();
+		xVals = new ArrayList<String>();
 		ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
-		for (int i = data.size() - 1; i >= 0; i--) {
-			xVals.add(TimeUtils.formatTime(data.get(i).getXVALUE(), "MM/dd"));
-			// y轴数据 x坐标点位
-			yVals1.add(new BarEntry(Math.round(Double.valueOf(data.get(i).getYVALUE())), data.size() - i - 1));
+		for (int i = sygps.size() - 1; i >= 0; i--) {
+			xVals.add(TimeUtils.formatTime(sygps.get(i).getDate(), "MM/dd"));
+			yVals1.add(new BarEntry(Math.round(Double.valueOf(sygps.get(i).getValue())), sygps.size() - i - 1));
 		}
 
-		BarDataSet set1 = new BarDataSet(yVals1, "");
+		ArrayList<SYGP> dbsygps = info.getDbsygps();
+		ArrayList<BarEntry> yVals2 = new ArrayList<BarEntry>();
+		for (int i = dbsygps.size() - 1; i >= 0; i--) {
+			yVals2.add(new BarEntry(Math.round(Double.valueOf(dbsygps.get(i).getValue())), dbsygps.size() - i - 1));
+		}
+
+		set1 = new BarDataSet(yVals1, "");
 		set1.setColor(currColor);
+		set2 = new BarDataSet(yVals2, "");
+		set2.setColor(Color.rgb(255, 0, 0));
 
-		ArrayList<BarDataSet> dataSets = new ArrayList<BarDataSet>();
+		dataSets = new ArrayList<BarDataSet>();
+
+		// 默认一组
+		setSwitchData(weekSB.isChecked());
+	}
+
+	private void setSwitchData(boolean isCompare) {
+		dataSets.clear();
 		dataSets.add(set1);
-
+		if (isCompare)
+			dataSets.add(set2);
 		BarData barData = new BarData(xVals, dataSets);
 
 		// add space between the dataset groups in percent of bar-width
 		barData.setGroupSpace(110f);
 		weekChart.setData(barData);
+
+		weekChart.animateXY(2000, 2000);
+		weekChart.invalidate();
 	}
 
-	public void setData(int count) {
-		ArrayList<String> xVals = new ArrayList<String>();
-
-		for (int i = 0; i < count; i++) {
-			xVals.add((i + 1990) + "");
-		}
-
-		ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
-		ArrayList<BarEntry> yVals2 = new ArrayList<BarEntry>();
-
-		float mult = 100;
-		for (int i = 0; i < count; i++) {
-			float val = (float) (Math.random() * mult) + 3;
-			yVals1.add(new BarEntry(val, i));
-		}
-
-		for (int i = 0; i < count; i++) {
-			float val = (float) (Math.random() * mult) + 3;
-			yVals2.add(new BarEntry(val, i));
-		}
-
-		BarDataSet set1 = new BarDataSet(yVals1, "");
-		set1.setColor(currColor);
-		BarDataSet set2 = new BarDataSet(yVals2, "");
-		set2.setColor(Color.rgb(255, 0, 0));
-
-		ArrayList<BarDataSet> dataSets = new ArrayList<BarDataSet>();
-		dataSets.add(set1);
-		dataSets.add(set2);
-
-		BarData data = new BarData(xVals, dataSets);
-
-		// add space between the dataset groups in percent of bar-width
-		data.setGroupSpace(110f);
-
-		weekChart.setData(data);
+	@Override
+	public void fetchObjectData() {
+		Toast.makeText(mActivity, "Week", Toast.LENGTH_SHORT).show();
+		getServerData();
 	}
 
 }
