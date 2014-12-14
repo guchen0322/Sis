@@ -133,9 +133,15 @@ public class MonthFragment extends BaseDataFragment {
 	}
 
 	private void getServerData() {
-		String url = Constant.MONTH_URL + "?type=SYGP:01.SC0001";
-		Log.d("zhang.h", url);
-		SISHttpClient.get(url, new BaseJsonHttpResponseHandler<ResInfo>() {
+		StringBuffer url = new StringBuffer(Constant.MONTH_URL);
+		String jz = currJZTV.getText().toString();
+		if ("1号机组".equals(jz)) {
+			url.append("?type=SYGP:").append("01").append(".SC0001");
+		} else {
+			url.append("?type=SYGP:").append("02").append(".SC0001");
+		}
+		Log.d("zhang.h", url.toString());
+		SISHttpClient.get(url.toString(), new BaseJsonHttpResponseHandler<ResInfo>() {
 
 			@Override
 			public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, ResInfo errorResponse) {

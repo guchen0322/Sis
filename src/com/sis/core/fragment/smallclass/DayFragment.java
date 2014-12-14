@@ -1,5 +1,6 @@
 package com.sis.core.fragment.smallclass;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import org.apache.http.Header;
@@ -121,9 +122,15 @@ public class DayFragment extends BaseDataFragment {
 	}
 
 	private void getServerData() {
-		String url = Constant.DAY_URL + "?type=SYGP:01.SC0001";
-		Log.d("zhang.h", url);
-		SISHttpClient.get(url, new BaseJsonHttpResponseHandler<ResInfo>() {
+		StringBuffer url = new StringBuffer(Constant.DAY_URL);
+		String jz = currJZTV.getText().toString();
+		if ("1号机组".equals(jz)) {
+			url.append("?type=SYGP:").append("01").append(".SC0001");
+		} else {
+			url.append("?type=SYGP:").append("02").append(".SC0001");
+		}
+		Log.d("zhang.h", url.toString());
+		SISHttpClient.get(url.toString(), new BaseJsonHttpResponseHandler<ResInfo>() {
 
 			@Override
 			public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, ResInfo errorResponse) {
@@ -147,14 +154,17 @@ public class DayFragment extends BaseDataFragment {
 	private void setData(ResInfo info) {
 		mCallBackListener.dataCallBack(info);
 
-		ArrayList<SYGP> data = info.getSygps();
+		ArrayList<SYGP> sygps = info.getSygps();
 		ArrayList<String> xVals = new ArrayList<String>();
 		ArrayList<Entry> vals1 = new ArrayList<Entry>();
 		// 倒叙排列
-		for (int i = data.size() - 1; i >= 0; i--) {
-			xVals.add(data.get(i).getDate());
+		for (int i = sygps.size() - 1; i >= 0; i--) {
+			SYGP sygp = sygps.get(i);
+			xVals.add(sygp.getDate());
 			// y轴数据 x坐标点位
-			vals1.add(new Entry(Float.parseFloat(data.get(i).getValue()), data.size() - i - 1));
+			float val = Float.valueOf(sygp.getValue());
+			float valFinal = new BigDecimal(val).setScale(3, BigDecimal.ROUND_HALF_UP).floatValue();
+			vals1.add(new Entry(valFinal, sygps.size() - i - 1));
 		}
 
 		// create a dataset and give it a type

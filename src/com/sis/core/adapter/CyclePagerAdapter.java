@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.ViewGroup;
 
+import com.sis.core.App;
 import com.sis.core.enums.FragmentType;
 import com.sis.core.fragment.base.BaseDataFragment;
 import com.sis.core.fragment.smallclass.DayFragment;
@@ -24,13 +25,16 @@ public class CyclePagerAdapter extends FragmentStatePagerAdapter {
 	private FragmentType fragmentType;
 	private DataCallBackListener mListenter;
 
-	private HashMap<Integer, BaseDataFragment> mFragments = new HashMap<Integer, BaseDataFragment>();
-	private HashMap<Integer, Boolean> mFragmentsState = new HashMap<Integer, Boolean>();
+	private HashMap<Integer, BaseDataFragment> mFragments;
+	private HashMap<Integer, Boolean> mFragmentsState;
 
 	public CyclePagerAdapter(FragmentManager fm, FragmentType fragmentType, DataCallBackListener mCallBackListener) {
 		super(fm);
 		this.fragmentType = fragmentType;
 		this.mListenter = mCallBackListener;
+
+		this.mFragments = App.getInstance().getmFragments();
+		this.mFragmentsState = App.getInstance().getmFragmentsState();
 	}
 
 	@Override

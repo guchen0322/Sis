@@ -1,5 +1,8 @@
 package com.sis.core.ui;
 
+import java.util.HashMap;
+import java.util.Map.Entry;
+
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -14,10 +17,12 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.sis.core.App;
 import com.sis.core.R;
 import com.sis.core.entity.ResInfo;
 import com.sis.core.enums.FragmentType;
 import com.sis.core.fragment.BigClassFragment;
+import com.sis.core.fragment.base.BaseDataFragment;
 import com.sis.core.listener.CyclePageChangeListener;
 import com.sis.core.listener.DataCallBackListener;
 import com.sis.core.ui.base.BaseFragmentActivity;
@@ -159,6 +164,11 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 			selJZTV.setText(currJZ);
 			if (mPopWin != null)
 				mPopWin.dismiss();
+
+			// 重新请求
+			HashMap<Integer, BaseDataFragment> mFragments = App.getInstance().getmFragments();
+			Entry<Integer, BaseDataFragment> firstEntry = mFragments.entrySet().iterator().next();
+			firstEntry.getValue().fetchObjectData();
 			break;
 		case R.id.jzfh_layout:
 			titleTV.setText(R.string.jizufuhe);

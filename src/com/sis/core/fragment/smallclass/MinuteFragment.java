@@ -115,9 +115,15 @@ public class MinuteFragment extends BaseDataFragment {
 	}
 
 	private void getServerData() {
-		String url = Constant.MIN_URL + "?type=SYGP:01.SC0001";
-		Log.d("zhang.h", url);
-		SISHttpClient.get(url, new BaseJsonHttpResponseHandler<ResInfo>() {
+		StringBuffer url = new StringBuffer(Constant.MIN_URL);
+		String jz = currJZTV.getText().toString();
+		if ("1号机组".equals(jz)) {
+			url.append("?type=SYGP:").append("01").append(".SC0001");
+		} else {
+			url.append("?type=SYGP:").append("02").append(".SC0001");
+		}
+		Log.d("zhang.h", url.toString());
+		SISHttpClient.get(url.toString(), new BaseJsonHttpResponseHandler<ResInfo>() {
 
 			@Override
 			public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, ResInfo errorResponse) {
@@ -141,14 +147,14 @@ public class MinuteFragment extends BaseDataFragment {
 	private void setData(ResInfo info) {
 		mCallBackListener.dataCallBack(info);
 
-		ArrayList<SYGP> data = info.getSygps();
+		ArrayList<SYGP> sygps = info.getSygps();
 		ArrayList<String> xVals = new ArrayList<String>();
 		ArrayList<Entry> vals1 = new ArrayList<Entry>();
 		// 倒叙排列
-		for (int i = data.size() - 1; i >= 0; i--) {
-			xVals.add(data.get(i).getDate());
+		for (int i = sygps.size() - 1; i >= 0; i--) {
+			xVals.add(sygps.get(i).getDate());
 			// y轴数据 x坐标点位
-			vals1.add(new Entry(Float.parseFloat(data.get(i).getValue()), data.size() - i - 1));
+			vals1.add(new Entry(Float.valueOf(sygps.get(i).getValue()), sygps.size() - i - 1));
 		}
 
 		// create a dataset and give it a type

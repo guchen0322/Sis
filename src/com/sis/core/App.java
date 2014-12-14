@@ -2,11 +2,11 @@ package com.sis.core;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.util.DisplayMetrics;
-
+import com.sis.core.fragment.base.BaseDataFragment;
 import com.sis.core.utils.ActivityMgrUtils;
 import com.sis.core.utils.PreferenceUtils;
 
@@ -16,6 +16,7 @@ import com.sis.core.utils.PreferenceUtils;
  * @author Simon
  * 
  */
+@SuppressLint("UseSparseArrays")
 public class App extends Application {
 	private static App singleton;
 	private static Context mContext;
@@ -75,6 +76,21 @@ public class App extends Application {
 		accounts.put("Sunl", "sygpassword");
 		accounts.put("Dongmh", "sygpassword");
 		accounts.put("Jizw", "sygpassword");
+	}
+
+	private HashMap<Integer, BaseDataFragment> mFragments;
+	private HashMap<Integer, Boolean> mFragmentsState;
+
+	public HashMap<Integer, BaseDataFragment> getmFragments() {
+		if (mFragments == null)
+			mFragments = new HashMap<Integer, BaseDataFragment>();
+		return mFragments;
+	}
+
+	public HashMap<Integer, Boolean> getmFragmentsState() {
+		if (mFragmentsState == null)
+			mFragmentsState = new HashMap<Integer, Boolean>();
+		return mFragmentsState;
 	}
 
 }
