@@ -37,6 +37,7 @@ public class DayFragment extends BaseDataFragment {
 	protected int currColor;
 
 	private LineChart dayChart;
+	private String dataType = "01";
 
 	public static DayFragment newInstance(FragmentType fragmentType) {
 		DayFragment fragment = new DayFragment();
@@ -53,15 +54,19 @@ public class DayFragment extends BaseDataFragment {
 		switch (fragmentType) {
 		case JZFH:
 			currColor = JZFH_COLOR;
+			dataType = "01";
 			break;
 		case FDL:
 			currColor = FDL_COLOR;
+			dataType = "02";
 			break;
 		case FDMH:
 			currColor = FDMH_COLOR;
+			dataType = "03";
 			break;
 		case GDMH:
 			currColor = GDMH_COLOR;
+			dataType = "05";
 			break;
 		default:
 			break;
@@ -125,9 +130,9 @@ public class DayFragment extends BaseDataFragment {
 		StringBuffer url = new StringBuffer(Constant.DAY_URL);
 		String jz = currJZTV.getText().toString();
 		if ("1号机组".equals(jz)) {
-			url.append("?type=SYGP:").append("01").append(".SC0001");
+			url.append("?type=SYGP:").append("01").append(".SC00").append(dataType);
 		} else {
-			url.append("?type=SYGP:").append("02").append(".SC0001");
+			url.append("?type=SYGP:").append("02").append(".SC00").append(dataType);
 		}
 		Log.d("zhang.h", url.toString());
 		SISHttpClient.get(url.toString(), new BaseJsonHttpResponseHandler<ResInfo>() {
