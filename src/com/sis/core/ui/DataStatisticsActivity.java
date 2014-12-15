@@ -230,7 +230,7 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 			break;
 		// 季
 		case 4:
-			descTV.setText("季统计数据   2014年 3季度");
+			descTV.setText("季统计数据");
 			oneTV.setTextColor(getResources().getColor(R.color.other_data_color));
 			twoTV.setTextColor(getResources().getColor(R.color.other_data_color));
 			thirdTV.setTextColor(getResources().getColor(R.color.other_data_color));
@@ -238,7 +238,7 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 			break;
 		// 年
 		case 5:
-			descTV.setText("年统计数据   2014年");
+			descTV.setText("年统计数据");
 			oneTV.setTextColor(getResources().getColor(R.color.other_data_color));
 			twoTV.setTextColor(getResources().getColor(R.color.other_data_color));
 			thirdTV.setTextColor(getResources().getColor(R.color.other_data_color));
@@ -256,6 +256,11 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 				oneTV.setText(String.format("%.2f", Double.valueOf(resInfo.getValue())));
 				twoTV.setText(String.format("%.2f", Double.valueOf(resInfo.getDifference())));
 				thirdTV.setText(String.format("%.2f", Double.valueOf(resInfo.getPercentage())) + "%");
+
+				// 设置Date
+				if (!"null".equals(resInfo.getDate())) {
+					descTV.setText(descTV.getText() + " " + resInfo.getDate());
+				}
 			}
 		});
 	}

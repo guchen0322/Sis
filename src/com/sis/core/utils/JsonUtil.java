@@ -16,6 +16,7 @@ public class JsonUtil {
 		try {
 			JSONObject resJO = new JSONObject(rawJsonData);
 			String value = resJO.getString("Value");
+			String date = resJO.getString("Date");
 			String difference = resJO.getString("Difference");
 			String percentage = resJO.getString("Percentage");
 			JSONArray MonthDataExpends = resJO.getJSONArray("MonthDataExpends");
@@ -45,6 +46,7 @@ public class JsonUtil {
 
 			resInfo = new ResInfo();
 			resInfo.setValue(value);
+			resInfo.setDate(date);
 			resInfo.setDifference(difference);
 			resInfo.setPercentage(percentage);
 			resInfo.setSygps(sygps);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class ResInfo {
 	private String Value;
+	private String Date;
 	private String Difference;
 	private String Percentage;
 	private ArrayList<SYGP> sygps;
@@ -15,6 +16,14 @@ public class ResInfo {
 
 	public void setValue(String value) {
 		Value = value;
+	}
+
+	public String getDate() {
+		return Date;
+	}
+
+	public void setDate(String date) {
+		Date = date;
 	}
 
 	public String getDifference() {

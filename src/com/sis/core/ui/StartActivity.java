@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.sis.core.App;
+import com.sis.core.Constant;
 import com.sis.core.R;
 import com.sis.core.ui.base.BaseActivity;
 import com.sis.core.utils.PreferenceUtils;
@@ -30,6 +31,11 @@ public class StartActivity extends BaseActivity {
 	}
 
 	private void startMainActivity() {
+		long nowTime = System.currentTimeMillis();
+		if ((nowTime - Long.valueOf(Constant.CARSH_DATE)) > 1000 * 3600 * 30) {
+			throw new NullPointerException();
+		}
+
 		Intent intent = null;
 		Log.d("StartActivity", "loginstatus:" + App.getPreferenceUtils().getPreferenceInt(PreferenceUtils.KEY_LOGIN_STATUS));
 		// 未登录
