@@ -111,6 +111,7 @@ public class DayFragment extends BaseDataFragment {
 
 		dayChart.setDrawVerticalGrid(false);
 		dayChart.setDrawHorizontalGrid(false);
+		dayChart.setNoDataText("加载中...");
 
 		XLabels xl = dayChart.getXLabels();
 		xl.setTextColor(currColor);
@@ -139,7 +140,8 @@ public class DayFragment extends BaseDataFragment {
 
 			@Override
 			public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, ResInfo errorResponse) {
-
+				dayChart.setNoDataText("加载数据失败");
+				dayChart.invalidate();
 			}
 
 			@Override

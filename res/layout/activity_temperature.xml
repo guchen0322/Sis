@@ -23,8 +23,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:paddingBottom="20dp"
-            android:paddingTop="20dp"
+            android:paddingBottom="@dimen/title_margin"
+            android:paddingTop="@dimen/title_margin"
             android:text="@string/zhuqiwendu"
             android:textColor="@color/white"
             android:textSize="25sp" />

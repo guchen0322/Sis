@@ -38,6 +38,17 @@ public class TimeUtils {
 		return strDate;
 	}
 
+	public static String formatTime2(String time, String pattern) {
+		String strDate = null;
+		try {
+			Date date = new SimpleDateFormat("yyy-MM-dd", Locale.CHINA).parse(time);
+			strDate = new SimpleDateFormat(pattern, Locale.CHINA).format(date);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return strDate;
+	}
+
 	public static String getWeekStartTime(Date now) {
 		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(now);
 	}

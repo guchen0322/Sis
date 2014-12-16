@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 标题栏上下间距 -->
+    <dimen name="title_margin">10dp</dimen>
+
+</resources>

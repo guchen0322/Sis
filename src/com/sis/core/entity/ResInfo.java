@@ -9,6 +9,7 @@ public class ResInfo {
 	private String Percentage;
 	private ArrayList<SYGP> sygps;
 	private ArrayList<SYGP> dbsygps;
+	private ArrayList<Integer> colors;
 
 	public String getValue() {
 		return Value;
@@ -58,4 +59,11 @@ public class ResInfo {
 		this.dbsygps = dbsygps;
 	}
 
+	public ArrayList<Integer> getColors() {
+		return colors;
+	}
+
+	public void setColors(ArrayList<Integer> colors) {
+		this.colors = colors;
+	}
 }

@@ -33,6 +33,7 @@ import com.sis.core.enums.FragmentType;
 import com.sis.core.fragment.base.BaseDataFragment;
 import com.sis.core.net.SISHttpClient;
 import com.sis.core.utils.JsonUtil;
+import com.sis.core.utils.TimeUtils;
 import com.sis.core.widget.switchView.SwitchButton;
 
 public class MonthFragment extends BaseDataFragment {
@@ -48,7 +49,7 @@ public class MonthFragment extends BaseDataFragment {
 
 	private SwitchButton monthSB;
 	private String dataType = "01";
-	
+
 	public static MonthFragment newInstance(FragmentType fragmentType) {
 		MonthFragment fragment = new MonthFragment();
 		Bundle args = new Bundle();
@@ -121,6 +122,7 @@ public class MonthFragment extends BaseDataFragment {
 
 		monthChart.setDrawGridBackground(false);
 		monthChart.setDrawHorizontalGrid(false);
+		monthChart.setNoDataText("加载中...");
 
 		XLabels xl = monthChart.getXLabels();
 		xl.setCenterXLabelText(true);
@@ -150,7 +152,8 @@ public class MonthFragment extends BaseDataFragment {
 
 			@Override
 			public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, ResInfo errorResponse) {
-
+				monthChart.setNoDataText("加载数据失败");
+				monthChart.invalidate();
 			}
 
 			@Override
@@ -173,15 +176,14 @@ public class MonthFragment extends BaseDataFragment {
 		ArrayList<SYGP> sygps = info.getSygps();
 		xVals = new ArrayList<String>();
 		ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
-		for (int i = sygps.size() - 1; i >= 0; i--) {
-			xVals.add(sygps.get(i).getDate());
-			yVals1.add(new BarEntry(Math.round(Double.valueOf(sygps.get(i).getValue())), sygps.size() - i - 1));
-		}
 
 		ArrayList<SYGP> dbsygps = info.getDbsygps();
 		ArrayList<BarEntry> yVals2 = new ArrayList<BarEntry>();
-		for (int i = dbsygps.size() - 1; i >= 0; i--) {
-			yVals2.add(new BarEntry(Math.round(Double.valueOf(dbsygps.get(i).getValue())), dbsygps.size() - i - 1));
+		for (int i = sygps.size() - 1; i >= 0; i--) {
+			SYGP sygp = sygps.get(i);
+			xVals.add(TimeUtils.formatTime2(sygp.getDate(), "yy/MM/dd"));
+			yVals1.add(new BarEntry(Math.round(Float.valueOf(sygp.getValue())), sygps.size() - i - 1));
+			yVals2.add(new BarEntry(Math.round(Float.valueOf(dbsygps.get(i).getValue())), dbsygps.size() - i - 1));
 		}
 
 		set1 = new BarDataSet(yVals1, "");
@@ -196,18 +198,20 @@ public class MonthFragment extends BaseDataFragment {
 	}
 
 	private void setSwitchData(boolean isCompare) {
-		dataSets.clear();
-		dataSets.add(set1);
-		if (isCompare)
-			dataSets.add(set2);
-		BarData barData = new BarData(xVals, dataSets);
+		if (dataSets != null) {
+			dataSets.clear();
+			dataSets.add(set1);
+			if (isCompare)
+				dataSets.add(set2);
+			BarData barData = new BarData(xVals, dataSets);
 
-		// add space between the dataset groups in percent of bar-width
-		barData.setGroupSpace(110f);
-		monthChart.setData(barData);
+			// add space between the dataset groups in percent of bar-width
+			barData.setGroupSpace(110f);
+			monthChart.setData(barData);
 
-		monthChart.animateXY(2000, 2000);
-		monthChart.invalidate();
+			monthChart.animateXY(2000, 2000);
+			monthChart.invalidate();
+		}
 	}
 
 	@Override

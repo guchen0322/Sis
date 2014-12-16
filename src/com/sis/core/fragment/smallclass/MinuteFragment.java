@@ -104,6 +104,7 @@ public class MinuteFragment extends BaseDataFragment {
 
 		minuteChart.setDrawGridBackground(false);
 		minuteChart.setDrawVerticalGrid(false);
+		minuteChart.setNoDataText("加载中...");
 
 		XLabels x = minuteChart.getXLabels();
 		x.setTextColor(currColor);
@@ -132,7 +133,8 @@ public class MinuteFragment extends BaseDataFragment {
 
 			@Override
 			public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, ResInfo errorResponse) {
-
+				minuteChart.setNoDataText("加载数据失败");
+				minuteChart.invalidate();
 			}
 
 			@Override

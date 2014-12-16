@@ -7,6 +7,7 @@ import org.apache.http.Header;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.interfaces.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.Legend;
 import com.github.mikephil.charting.utils.Legend.LegendPosition;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
@@ -35,7 +37,9 @@ public class YearFragment extends BaseDataFragment {
 	private ArrayList<String> legends;
 
 	private PieChart yearChart;
+	private PieData data;
 	private String dataType = "01";
+	private SparseArray<String> legendMap = new SparseArray<String>();
 
 	public static YearFragment newInstance(FragmentType fragmentType) {
 		YearFragment fragment = new YearFragment();
@@ -96,6 +100,21 @@ public class YearFragment extends BaseDataFragment {
 
 		// display percentage values
 		yearChart.setUsePercentValues(false);
+		yearChart.setNoDataText("加载中...");
+		yearChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+
+			@Override
+			public void onValueSelected(Entry e, int dataSetIndex) {
+				legends.clear();
+				legends.add(legendMap.get(e.getXIndex()));
+				showChart();
+			}
+
+			@Override
+			public void onNothingSelected() {
+
+			}
+		});
 
 		return yearLayout;
 	}
@@ -113,7 +132,8 @@ public class YearFragment extends BaseDataFragment {
 
 			@Override
 			public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, ResInfo errorResponse) {
-
+				yearChart.setNoDataText("加载数据失败");
+				yearChart.invalidate();
 			}
 
 			@Override
@@ -125,7 +145,7 @@ public class YearFragment extends BaseDataFragment {
 
 			@Override
 			protected ResInfo parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-				return JsonUtil.getResInfo(rawJsonData);
+				return JsonUtil.getYearResInfo(rawJsonData);
 			}
 		});
 	}
@@ -136,41 +156,42 @@ public class YearFragment extends BaseDataFragment {
 		ArrayList<SYGP> sygps = info.getSygps();
 		ArrayList<String> xVals = new ArrayList<String>();
 		ArrayList<Entry> yVals = new ArrayList<Entry>();
-		for (int i = 0; i < sygps.size(); i++) {
-			SYGP sygp = sygps.get(i);
-			xVals.add(sygp.getDate());
-			yVals.add(new Entry(Math.round(Double.valueOf(sygp.getValue())), i));
-		}
 
 		ArrayList<SYGP> dbsygps = info.getDbsygps();
 		legends = new ArrayList<String>();
-		for (int i = 0; i < dbsygps.size(); i++) {
+
+		for (int i = 0; i < sygps.size(); i++) {
+			SYGP sygp = sygps.get(i);
 			SYGP dbsygp = dbsygps.get(i);
-			legends.add(dbsygp.getDate() + "  " + dbsygp.getValue() + "MW");
+			xVals.add(sygp.getDate());
+			yVals.add(new Entry(Float.valueOf(sygp.getValue()), i));
+			legendMap.put(i, dbsygp.getDate() + "  " + dbsygp.getValue() + "MW");
 		}
 
 		PieDataSet ySet = new PieDataSet(yVals, "");
 		ySet.setSliceSpace(3f);
+		ySet.setColors(info.getColors());
 
-		// add a lot of colors
-		ArrayList<Integer> colors = new ArrayList<Integer>();
-		colors.add(Color.rgb(34, 165, 224));
-		colors.add(Color.rgb(0, 150, 66));
-		colors.add(Color.rgb(248, 181, 48));
-		colors.add(Color.rgb(231, 84, 29));
-		ySet.setColors(colors);
-
-		PieData data = new PieData(xVals, ySet);
+		data = new PieData(xVals, ySet);
 		data.setmLegendVals(legends);
 		yearChart.setData(data);
+
+		// undo all highlights
+		yearChart.highlightValues(null);
+		yearChart.invalidate();
+		yearChart.animateXY(1500, 1500);
 
 		Legend l = yearChart.getLegend();
 		l.setPosition(LegendPosition.RIGHT_OF_CHART);
 		l.setXEntrySpace(7f);
 		l.setYEntrySpace(10f);
 		l.setTextSize(12.0f);
+	}
 
-		yearChart.animateXY(1500, 1500);
+	private void showChart() {
+		data.setmLegendVals(legends);
+		yearChart.setData(data);
+
 		yearChart.invalidate();
 	}
 

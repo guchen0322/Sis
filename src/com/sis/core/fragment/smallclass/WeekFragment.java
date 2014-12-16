@@ -122,6 +122,7 @@ public class WeekFragment extends BaseDataFragment {
 
 		weekChart.setDrawGridBackground(false);
 		weekChart.setDrawHorizontalGrid(false);
+		weekChart.setNoDataText("加载中...");
 
 		XLabels xl = weekChart.getXLabels();
 		xl.setCenterXLabelText(true);
@@ -151,7 +152,8 @@ public class WeekFragment extends BaseDataFragment {
 
 			@Override
 			public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, ResInfo errorResponse) {
-
+				weekChart.setNoDataText("加载数据失败");
+				weekChart.invalidate();
 			}
 
 			@Override
@@ -174,15 +176,14 @@ public class WeekFragment extends BaseDataFragment {
 		ArrayList<SYGP> sygps = info.getSygps();
 		xVals = new ArrayList<String>();
 		ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
-		for (int i = sygps.size() - 1; i >= 0; i--) {
-			xVals.add(TimeUtils.formatTime(sygps.get(i).getDate(), "MM/dd"));
-			yVals1.add(new BarEntry(Math.round(Double.valueOf(sygps.get(i).getValue())), sygps.size() - i - 1));
-		}
 
 		ArrayList<SYGP> dbsygps = info.getDbsygps();
 		ArrayList<BarEntry> yVals2 = new ArrayList<BarEntry>();
-		for (int i = dbsygps.size() - 1; i >= 0; i--) {
-			yVals2.add(new BarEntry(Math.round(Double.valueOf(dbsygps.get(i).getValue())), dbsygps.size() - i - 1));
+		for (int i = sygps.size() - 1; i >= 0; i--) {
+			SYGP sygp = sygps.get(i);
+			xVals.add(TimeUtils.formatTime(sygp.getDate(), "MM/dd"));
+			yVals1.add(new BarEntry(Math.round(Float.valueOf(sygp.getValue())), sygps.size() - i - 1));
+			yVals2.add(new BarEntry(Math.round(Float.valueOf(dbsygps.get(i).getValue())), dbsygps.size() - i - 1));
 		}
 
 		set1 = new BarDataSet(yVals1, "");
@@ -197,18 +198,20 @@ public class WeekFragment extends BaseDataFragment {
 	}
 
 	private void setSwitchData(boolean isCompare) {
-		dataSets.clear();
-		dataSets.add(set1);
-		if (isCompare)
-			dataSets.add(set2);
-		BarData barData = new BarData(xVals, dataSets);
+		if (dataSets != null) {
+			dataSets.clear();
+			dataSets.add(set1);
+			if (isCompare)
+				dataSets.add(set2);
+			BarData barData = new BarData(xVals, dataSets);
 
-		// add space between the dataset groups in percent of bar-width
-		barData.setGroupSpace(110f);
-		weekChart.setData(barData);
+			// add space between the dataset groups in percent of bar-width
+			barData.setGroupSpace(110f);
+			weekChart.setData(barData);
 
-		weekChart.animateXY(2000, 2000);
-		weekChart.invalidate();
+			weekChart.animateXY(2000, 2000);
+			weekChart.invalidate();
+		}
 	}
 
 	@Override

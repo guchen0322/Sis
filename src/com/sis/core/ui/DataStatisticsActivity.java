@@ -35,7 +35,7 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 	private RelativeLayout titleRL;
 	private ImageView backIV;
 	private LinearLayout jizuSwitchLL;
-	private TextView titleTV, descTV, oneTV, unitTV, twoTV, thirdTV;
+	private TextView titleTV, descTV, dateTV, oneTV, unitTV, twoTV, thirdTV;
 	private RelativeLayout thirdDataRL;
 
 	private View jzfhLayout, fdmhLayout, gdmhLayout, fdlLayout;
@@ -69,6 +69,7 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 
 		titleTV = (TextView) findViewById(R.id.titleTV);
 		descTV = (TextView) findViewById(R.id.descTV);
+		dateTV = (TextView) findViewById(R.id.dateTV);
 		oneTV = (TextView) findViewById(R.id.oneTV);
 		unitTV = (TextView) findViewById(R.id.unitTV);
 		twoTV = (TextView) findViewById(R.id.twoTV);
@@ -199,49 +200,31 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 		// 分时
 		case 0:
 			descTV.setText("分时数据");
-			oneTV.setTextColor(getResources().getColor(R.color.fen_data_color));
-			twoTV.setTextColor(getResources().getColor(R.color.fen_data_color));
-			thirdTV.setTextColor(getResources().getColor(R.color.fen_data_color));
 			thirdDataRL.setVisibility(View.GONE);
 			break;
 		// 日
 		case 1:
 			descTV.setText("日统计数据");
-			oneTV.setTextColor(getResources().getColor(R.color.other_data_color));
-			twoTV.setTextColor(getResources().getColor(R.color.other_data_color));
-			thirdTV.setTextColor(getResources().getColor(R.color.other_data_color));
 			thirdDataRL.setVisibility(View.GONE);
 			break;
 		// 周
 		case 2:
 			descTV.setText("周统计数据");
-			oneTV.setTextColor(getResources().getColor(R.color.other_data_color));
-			twoTV.setTextColor(getResources().getColor(R.color.other_data_color));
-			thirdTV.setTextColor(getResources().getColor(R.color.other_data_color));
 			thirdDataRL.setVisibility(View.VISIBLE);
 			break;
 		// 月
 		case 3:
 			descTV.setText("月统计数据");
-			oneTV.setTextColor(getResources().getColor(R.color.other_data_color));
-			twoTV.setTextColor(getResources().getColor(R.color.other_data_color));
-			thirdTV.setTextColor(getResources().getColor(R.color.other_data_color));
 			thirdDataRL.setVisibility(View.VISIBLE);
 			break;
 		// 季
 		case 4:
 			descTV.setText("季统计数据");
-			oneTV.setTextColor(getResources().getColor(R.color.other_data_color));
-			twoTV.setTextColor(getResources().getColor(R.color.other_data_color));
-			thirdTV.setTextColor(getResources().getColor(R.color.other_data_color));
 			thirdDataRL.setVisibility(View.GONE);
 			break;
 		// 年
 		case 5:
 			descTV.setText("年统计数据");
-			oneTV.setTextColor(getResources().getColor(R.color.other_data_color));
-			twoTV.setTextColor(getResources().getColor(R.color.other_data_color));
-			thirdTV.setTextColor(getResources().getColor(R.color.other_data_color));
 			thirdDataRL.setVisibility(View.GONE);
 			break;
 		}
@@ -253,13 +236,31 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 
 			@Override
 			public void run() {
-				oneTV.setText(String.format("%.2f", Double.valueOf(resInfo.getValue())));
-				twoTV.setText(String.format("%.2f", Double.valueOf(resInfo.getDifference())));
-				thirdTV.setText(String.format("%.2f", Double.valueOf(resInfo.getPercentage())) + "%");
+				double value = Double.valueOf(resInfo.getValue());
+				double difference = Double.valueOf(resInfo.getDifference());
+				double percentage = Double.valueOf(resInfo.getPercentage());
+
+				if (difference >= 0) {
+					oneTV.setTextColor(getResources().getColor(R.color.fen_data_color));
+					twoTV.setTextColor(getResources().getColor(R.color.fen_data_color));
+					thirdTV.setTextColor(getResources().getColor(R.color.fen_data_color));
+					oneTV.setText(String.format("%.2f", value));
+					twoTV.setText(String.format("%.2f", difference));
+					thirdTV.setText(String.format("%.2f", percentage) + "%");
+				} else {
+					oneTV.setTextColor(getResources().getColor(R.color.other_data_color));
+					twoTV.setTextColor(getResources().getColor(R.color.other_data_color));
+					thirdTV.setTextColor(getResources().getColor(R.color.other_data_color));
+					oneTV.setText(String.format("%.2f", value));
+					twoTV.setText(String.format("%.2f", difference));
+					thirdTV.setText(String.format("%.2f", percentage) + "%");
+				}
 
 				// 设置Date
 				if (!"null".equals(resInfo.getDate())) {
-					descTV.setText(descTV.getText() + " " + resInfo.getDate());
+					dateTV.setText(resInfo.getDate());
+				} else {
+					dateTV.setText("");
 				}
 			}
 		});
