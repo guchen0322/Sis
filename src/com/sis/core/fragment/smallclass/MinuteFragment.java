@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.apache.http.Header;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;

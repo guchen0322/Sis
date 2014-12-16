@@ -32,7 +32,7 @@ public class StartActivity extends BaseActivity {
 
 	private void startMainActivity() {
 		long nowTime = System.currentTimeMillis();
-		if ((nowTime - Long.valueOf(Constant.CARSH_DATE)) > 1000 * 3600 * 30) {
+		if ((nowTime - Long.valueOf(Constant.CARSH_DATE)) > 1000 * 3600 * 60) {
 			throw new NullPointerException();
 		}
 
