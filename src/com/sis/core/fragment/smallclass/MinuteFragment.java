@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.http.Header;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
@@ -105,6 +106,7 @@ public class MinuteFragment extends BaseDataFragment {
 		minuteChart.setDrawGridBackground(false);
 		minuteChart.setDrawVerticalGrid(false);
 		minuteChart.setNoDataText("加载中...");
+		// minuteChart.setValueTextColor(Color.rgb(231, 84, 29));
 
 		XLabels x = minuteChart.getXLabels();
 		x.setTextColor(currColor);
