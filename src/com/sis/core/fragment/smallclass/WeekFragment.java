@@ -123,6 +123,7 @@ public class WeekFragment extends BaseDataFragment {
 		weekChart.setDrawGridBackground(false);
 		weekChart.setDrawHorizontalGrid(false);
 		weekChart.setNoDataText("加载中...");
+		weekChart.setStartAtZero(false);
 
 		XLabels xl = weekChart.getXLabels();
 		xl.setCenterXLabelText(true);

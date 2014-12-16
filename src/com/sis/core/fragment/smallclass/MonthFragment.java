@@ -123,6 +123,7 @@ public class MonthFragment extends BaseDataFragment {
 		monthChart.setDrawGridBackground(false);
 		monthChart.setDrawHorizontalGrid(false);
 		monthChart.setNoDataText("加载中...");
+		monthChart.setStartAtZero(false);
 
 		XLabels xl = monthChart.getXLabels();
 		xl.setCenterXLabelText(true);
