@@ -182,7 +182,7 @@ public class MonthFragment extends BaseDataFragment {
 		ArrayList<BarEntry> yVals2 = new ArrayList<BarEntry>();
 		for (int i = sygps.size() - 1; i >= 0; i--) {
 			SYGP sygp = sygps.get(i);
-			xVals.add(TimeUtils.formatTime2(sygp.getDate(), "yy/MM/dd"));
+			xVals.add(TimeUtils.formatTime2(sygp.getDate(), "yy/MM"));
 			yVals1.add(new BarEntry(Math.round(Float.valueOf(sygp.getValue())), sygps.size() - i - 1));
 			yVals2.add(new BarEntry(Math.round(Float.valueOf(dbsygps.get(i).getValue())), dbsygps.size() - i - 1));
 		}
