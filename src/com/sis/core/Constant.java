@@ -8,6 +8,4 @@ public class Constant {
 	public static final String MONTH_URL   = BASE_URL + "/getavgbymonth";
 	public static final String QUARTER_URL = BASE_URL + "/getavgbyquarter";
 	public static final String YEAR_URL    = BASE_URL + "/getavgbyyear";
-	
-	public static final String CARSH_DATE  = "1418626468448";
 }
