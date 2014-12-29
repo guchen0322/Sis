@@ -39,7 +39,7 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 	private RelativeLayout thirdDataRL;
 
 	private View jzfhLayout, fdmhLayout, gdmhLayout, fdlLayout;
-	private ImageView jzfhTabIV, fdlTabIV, fdmhTabIV, gdmhTabIV;
+	private ImageView jzfhTabIV, fdmhTabIV, gdmhTabIV, fdlTabIV;
 
 	private PopupWindow mPopWin;
 	private TextView currJZTV;
@@ -78,9 +78,9 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 		thirdDataRL = (RelativeLayout) findViewById(R.id.thirdDataRL);
 
 		jzfhTabIV = (ImageView) findViewById(R.id.jzfhTabIV);
-		fdlTabIV = (ImageView) findViewById(R.id.fdlTabIV);
 		fdmhTabIV = (ImageView) findViewById(R.id.fdmhTabIV);
 		gdmhTabIV = (ImageView) findViewById(R.id.gdmhTabIV);
+		fdlTabIV = (ImageView) findViewById(R.id.fdlTabIV);
 		jzfhLayout = findViewById(R.id.jzfh_layout);
 		fdmhLayout = findViewById(R.id.fdmh_layout);
 		gdmhLayout = findViewById(R.id.gdmh_layout);
@@ -117,16 +117,16 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 			fragment = BigClassFragment.newInstance(FragmentType.JZFH);
 			break;
 		case 1:
-			fdlTabIV.setImageResource(R.drawable.fadianliang_press_tab);
-			fragment = BigClassFragment.newInstance(FragmentType.FDL);
-			break;
-		case 2:
 			fdmhTabIV.setImageResource(R.drawable.fadianmeihao_press_tab);
 			fragment = BigClassFragment.newInstance(FragmentType.FDMH);
 			break;
-		case 3:
+		case 2:
 			gdmhTabIV.setImageResource(R.drawable.gongdianmeihao_press_tab);
 			fragment = BigClassFragment.newInstance(FragmentType.GDMH);
+			break;
+		case 3:
+			fdlTabIV.setImageResource(R.drawable.fadianliang_press_tab);
+			fragment = BigClassFragment.newInstance(FragmentType.FDL);
 			break;
 		}
 
@@ -176,19 +176,19 @@ public class DataStatisticsActivity extends BaseFragmentActivity implements OnCl
 			unitTV.setText("MW");
 			setTabSelection(0);
 			break;
-		case R.id.fdl_layout:
-			titleTV.setText(R.string.fadianliang);
-			unitTV.setText("万KWH");
-			setTabSelection(1);
-			break;
 		case R.id.fdmh_layout:
 			titleTV.setText(R.string.fadianmeihao);
 			unitTV.setText("g/(kw.h)");
-			setTabSelection(2);
+			setTabSelection(1);
 			break;
 		case R.id.gdmh_layout:
 			titleTV.setText(R.string.gongdianmeihao);
 			unitTV.setText("g/(kw.h)");
+			setTabSelection(2);
+			break;
+		case R.id.fdl_layout:
+			titleTV.setText(R.string.fadianliang);
+			unitTV.setText("万KWH");
 			setTabSelection(3);
 			break;
 		}

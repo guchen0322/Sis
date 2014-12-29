@@ -82,7 +82,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="5dp"
-                android:textColor="@color/black"                android:textSize="17sp" />
+                android:textColor="@color/black"
+                android:textSize="17sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -98,6 +99,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
+                android:layout_gravity="center_vertical"
                 android:text="638.14"
                 android:textColor="@color/fen_data_color"
                 android:textSize="30sp" />
@@ -106,6 +108,7 @@
                 android:id="@+id/unitTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:paddingLeft="20dp"
                 android:text="MW"
                 android:textColor="@color/black"
@@ -202,27 +205,6 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/fdl_layout"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" >
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:orientation="vertical" >
-
-                <ImageView
-                    android:id="@+id/fdlTabIV"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:src="@drawable/fadianliang_tab" />
-            </LinearLayout>
-        </RelativeLayout>
-
-        <RelativeLayout
             android:id="@+id/fdmh_layout"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -261,6 +243,27 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:src="@drawable/gongdianmeihao_tab" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/fdl_layout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:orientation="vertical" >
+
+                <ImageView
+                    android:id="@+id/fdlTabIV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/fadianliang_tab" />
             </LinearLayout>
         </RelativeLayout>
     </LinearLayout>
